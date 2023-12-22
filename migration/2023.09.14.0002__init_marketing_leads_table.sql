@@ -28,6 +28,3 @@ CREATE TABLE IF NOT EXISTS public.marketing_leads_attachments (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
-
-ALTER TABLE public.marketing_leads ADD COLUMN channel_id uuid CONSTRAINT marketing_leads_channel_id_master_channel_new_id_fk REFERENCES public.master_channel_new NULL;
-ALTER TABLE public.marketing_leads ADD COLUMN template_id uuid CONSTRAINT marketing_leads_template_id_master_channel_template_id_fk REFERENCES public.master_channel_template NULL;

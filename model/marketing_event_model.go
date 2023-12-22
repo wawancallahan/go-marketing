@@ -4,17 +4,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type MarketingEvent struct {
-	gorm.Model
 	ID               uuid.UUID `gorm:"primary_key;column:id;type:uuid;default:gen_random_uuid();<-:create"`
 	EventName        string    `gorm:"column:event_name"`
 	EventTime        time.Time `gorm:"column:event_time"`
 	EventLocation    string    `gorm:"column:event_location"`
 	EventType        string    `gorm:"column:event_type"`
-	ChannelEvent     string    `gorm:"column:channel_type"`
+	ChannelEvent     string    `gorm:"column:channel_event"`
 	MeasurementEvent string    `gorm:"column:measurement_event"`
 	Status           string    `gorm:"column:status"`
 	Province         string    `gorm:"column:province"`

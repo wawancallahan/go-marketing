@@ -35,8 +35,6 @@ CREATE TABLE IF NOT EXISTS public.blog_articles (
     seo_keywords jsonb NULL,
     seo_meta_description TEXT NULL,
     total_views numeric (15) default 0,
-    created_by_id uuid CONSTRAINT marketing_leads_created_by_id_users_id_fk REFERENCES pm_auth_internal.users NULL,
-    updated_by_id uuid CONSTRAINT marketing_leads_updated_by_id_users_id_fk REFERENCES pm_auth_internal.users NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );

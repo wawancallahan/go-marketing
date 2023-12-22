@@ -4,11 +4,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type MarketingLeadAttachment struct {
-	gorm.Model
 	ID               uuid.UUID     `gorm:"primary_key;column:id;type:uuid;default:gen_random_uuid();<-:create"`
 	FileName         string        `gorm:"column:file_name"`
 	Path             time.Time     `gorm:"column:path"`

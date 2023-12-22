@@ -55,6 +55,8 @@ func New() *Config {
 
 	config.SetErrorHandler(defaultErrorHandler)
 
+	config.setFiberConfig()
+
 	return config
 }
 

@@ -5,24 +5,16 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"matsukana.cloud/go-marketing/config"
 )
-
-type DatabaseConfig struct {
-	Driver   string
-	Host     string
-	Username string
-	Password string
-	Port     int
-	Database string
-}
 
 type Database struct {
 	*gorm.DB
 }
 
-func New(config *DatabaseConfig) (*Database, error) {
-	dsn := "user=" + config.Username + " password=" + config.Password + " dbname=" + config.Database + " host=" + config.Host + " port=" + strconv.Itoa(config.Port) + " TimeZone=UTC"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+func New(config *config.Config) *Database {
+	dsn := "user=" + config.GetString("DB_USERNAME") + " password=" + config.GetString("DB_PASSWORD") + " dbname=" + config.GetString("DB_DATABASE") + " host=" + config.GetString("DB_HOST") + " port=" + strconv.Itoa(config.GetInt("DB_PORT")) + " TimeZone=UTC"
+	db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	return &Database{db}, err
+	return &Database{db}
 }

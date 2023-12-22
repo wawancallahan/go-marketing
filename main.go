@@ -2,51 +2,65 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 
 	configuration "matsukana.cloud/go-marketing/config"
 	"matsukana.cloud/go-marketing/database"
-	"matsukana.cloud/go-marketing/router"
+	"matsukana.cloud/go-marketing/response"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 type App struct {
 	*fiber.App
+	Config *configuration.Config
+	Db     *database.Database
+}
 
-	DB *database.Database
+func NewApp(config *configuration.Config, Db *database.Database) *App {
+	return &App{fiber.New(*config.GetFiberConfig()), config, Db}
 }
 
 func main() {
-	config := configuration.New()
+	app := InitializedServer()
 
-	app := App{
-		App: fiber.New(*config.GetFiberConfig()),
-	}
-
-	// Initialize database
-	db, err := database.New(&database.DatabaseConfig{
-		Driver:   config.GetString("DB_DRIVER"),
-		Host:     config.GetString("DB_HOST"),
-		Username: config.GetString("DB_USERNAME"),
-		Password: config.GetString("DB_PASSWORD"),
-		Port:     config.GetInt("DB_PORT"),
-		Database: config.GetString("DB_DATABASE"),
-	})
-
-	if err != nil || db == nil {
-		fmt.Println("failed to connect to database:", err.Error())
+	if app.Db == nil {
+		fmt.Println("failed to connect to database")
 	}
 
 	app.registerMiddlewares()
 
 	// Handle Register All Route in Router Folder
-	api := app.Group("/api")
-	router.RegisterRoute(api)
+	appRouter := InitializedRouter()
+	app.Mount("/api", appRouter)
+
+	// Custom 404 Handler
+	app.Use(func(c *fiber.Ctx) error {
+		if err := c.SendStatus(fiber.StatusNotFound); err != nil {
+			panic(err)
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(response.WebResponse{
+			Code:   fiber.StatusInternalServerError,
+			Status: "NOK",
+			Data:   nil,
+		})
+	})
+
+	// Close any connections on interrupt signal
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		app.exit()
+	}()
 
 	// Start listening on the specified address
-	err = app.Listen(config.GetString("APP_ADDR"))
+	err := app.Listen(app.Config.GetString("APP_ADDR"))
 	if err != nil {
 		app.exit()
 	}
@@ -54,6 +68,7 @@ func main() {
 
 func (app *App) registerMiddlewares() {
 	// Handle Panic
+	app.Use(cors.New())
 	app.Use(recover.New())
 	app.Use(logger.New())
 }

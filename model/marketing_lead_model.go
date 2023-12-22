@@ -4,12 +4,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type MarketingLead struct {
-	gorm.Model
-	ID                      uuid.UUID                 `gorm:"primary_key;column:id;type:uuid;default:gen_random_uuid();<-:create"`
+	ID                      uuid.UUID                 `gorm:"primary_key;column:id;type:uuid;default:uuid_generate_v4();<-:create"`
 	ProductCategory         string                    `gorm:"column:product_category"`
 	FullName                time.Time                 `gorm:"column:full_name"`
 	CompanyName             string                    `gorm:"column:company_name"`

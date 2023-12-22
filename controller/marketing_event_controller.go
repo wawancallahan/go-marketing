@@ -8,15 +8,23 @@ import (
 	"matsukana.cloud/go-marketing/validation"
 )
 
-type MarketingEventController struct {
-	MarketingEventService *service.MarketingEventService
+type MarketingEventController interface {
+	Index(ctx *fiber.Ctx) error
+	Create(ctx *fiber.Ctx) error
+	Find(ctx *fiber.Ctx) error
+	Update(ctx *fiber.Ctx) error
+	Delete(ctx *fiber.Ctx) error
 }
 
-func NewMarketingEventController(MarketingEventService *service.MarketingEventService) interface{} {
-	return &MarketingEventController{MarketingEventService: MarketingEventService}
+type MarketingEventControllerImpl struct {
+	MarketingEventService service.MarketingEventService
 }
 
-func (c *MarketingEventController) Index(ctx *fiber.Ctx) error {
+func NewMarketingEventController(MarketingEventService service.MarketingEventService) *MarketingEventControllerImpl {
+	return &MarketingEventControllerImpl{MarketingEventService: MarketingEventService}
+}
+
+func (c *MarketingEventControllerImpl) Index(ctx *fiber.Ctx) error {
 	items, err := c.MarketingEventService.Index()
 
 	if err != nil {
@@ -24,6 +32,7 @@ func (c *MarketingEventController) Index(ctx *fiber.Ctx) error {
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
 			Data:   nil,
+			Error:  err.Error(),
 		})
 	}
 
@@ -34,7 +43,7 @@ func (c *MarketingEventController) Index(ctx *fiber.Ctx) error {
 	})
 }
 
-func (c *MarketingEventController) Create(ctx *fiber.Ctx) error {
+func (c *MarketingEventControllerImpl) Create(ctx *fiber.Ctx) error {
 	var itemDTO dto.MarketingEventDTO
 
 	if err := ctx.BodyParser(&itemDTO); err != nil {
@@ -42,6 +51,7 @@ func (c *MarketingEventController) Create(ctx *fiber.Ctx) error {
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
 			Data:   nil,
+			Error:  err.Error(),
 		})
 	}
 	errs := validation.SetupValidation(itemDTO)
@@ -51,6 +61,7 @@ func (c *MarketingEventController) Create(ctx *fiber.Ctx) error {
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
 			Data:   nil,
+			Error:  errs,
 		})
 	}
 
@@ -61,6 +72,7 @@ func (c *MarketingEventController) Create(ctx *fiber.Ctx) error {
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
 			Data:   nil,
+			Error:  err.Error(),
 		})
 	}
 
@@ -71,7 +83,7 @@ func (c *MarketingEventController) Create(ctx *fiber.Ctx) error {
 	})
 }
 
-func (c *MarketingEventController) Find(ctx *fiber.Ctx) error {
+func (c *MarketingEventControllerImpl) Find(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
 	item, err := c.MarketingEventService.Find(id)
@@ -81,6 +93,7 @@ func (c *MarketingEventController) Find(ctx *fiber.Ctx) error {
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
 			Data:   nil,
+			Error:  err.Error(),
 		})
 	}
 
@@ -91,7 +104,7 @@ func (c *MarketingEventController) Find(ctx *fiber.Ctx) error {
 	})
 }
 
-func (c *MarketingEventController) Update(ctx *fiber.Ctx) error {
+func (c *MarketingEventControllerImpl) Update(ctx *fiber.Ctx) error {
 	var itemDTO dto.MarketingEventDTO
 	id := ctx.Params("id")
 
@@ -130,7 +143,7 @@ func (c *MarketingEventController) Update(ctx *fiber.Ctx) error {
 	})
 }
 
-func (c *MarketingEventController) Delete(ctx *fiber.Ctx) error {
+func (c *MarketingEventControllerImpl) Delete(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
 	err := c.MarketingEventService.Delete(id)

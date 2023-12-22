@@ -1,13 +1,16 @@
 package router
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"matsukana.cloud/go-marketing/controller"
+)
 
-func MarketingEventRouter(api fiber.Router) {
-	route := api.Group("/marketing-event")
+func MarketingEventRouter(api fiber.Router, controller controller.MarketingEventController) {
+	route := api.Group("/events")
 
-	route.Get("/")
-	route.Post("/create")
-	route.Get("/:id")
-	route.Put("/update/:id")
-	route.Delete("/delete/:id")
+	route.Get("/", controller.Index)
+	route.Post("/create", controller.Create)
+	route.Get("/:id", controller.Find)
+	route.Put("/update/:id", controller.Update)
+	route.Delete("/delete/:id", controller.Delete)
 }

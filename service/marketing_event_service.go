@@ -8,16 +8,24 @@ import (
 	"matsukana.cloud/go-marketing/repository"
 )
 
-type MarketingEventService struct {
+type MarketingEventService interface {
+	Index() (*[]model.MarketingEvent, error)
+	Create(itemDTO *dto.MarketingEventDTO) (*model.MarketingEvent, error)
+	Find(id string) (*model.MarketingEvent, error)
+	Update(itemDTO *dto.MarketingEventDTO, id string) error
+	Delete(id string) error
+}
+
+type MarketingEventServiceImpl struct {
 	Db                       *database.Database
-	MarketingEventRepository *repository.MarketingEventRepository
+	MarketingEventRepository repository.MarketingEventRepository
 }
 
-func NewMarketingEventService(Db *database.Database, MarketingEventRepository *repository.MarketingEventRepository) interface{} {
-	return &MarketingEventService{Db: Db, MarketingEventRepository: MarketingEventRepository}
+func NewMarketingEventService(Db *database.Database, MarketingEventRepository repository.MarketingEventRepository) *MarketingEventServiceImpl {
+	return &MarketingEventServiceImpl{Db: Db, MarketingEventRepository: MarketingEventRepository}
 }
 
-func (s *MarketingEventService) Index() (*[]model.MarketingEvent, error) {
+func (s *MarketingEventServiceImpl) Index() (*[]model.MarketingEvent, error) {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
@@ -30,44 +38,29 @@ func (s *MarketingEventService) Index() (*[]model.MarketingEvent, error) {
 
 	tx.Commit()
 
-	return &items, nil
+	return items, nil
 }
 
-func (s *MarketingEventService) Create(itemDTO *dto.MarketingEventDTO) (model.MarketingEvent, error) {
+func (s *MarketingEventServiceImpl) Create(itemDTO *dto.MarketingEventDTO) (*model.MarketingEvent, error) {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
 
-	participant, _ := itemDTO.Participant.Int64()
-
-	item := model.MarketingEvent{
-		EventName:        itemDTO.EventName,
-		EventTime:        itemDTO.EventTime,
-		EventLocation:    itemDTO.EventLocation,
-		EventType:        itemDTO.EventType,
-		ChannelEvent:     itemDTO.ChannelEvent,
-		MeasurementEvent: itemDTO.MeasurementEvent,
-		Status:           itemDTO.Status,
-		Province:         itemDTO.Province,
-		City:             itemDTO.City,
-		Participant:      participant,
-		PicName:          itemDTO.PicName,
-		SupportName:      itemDTO.SupportName,
-	}
+	item := itemDTO.ToModel()
 
 	err := s.MarketingEventRepository.Create(tx, &item)
 
 	if err != nil {
-		return item, err
+		return nil, err
 	}
 
 	tx.Commit()
 
-	return item, nil
+	return &item, nil
 
 }
 
-func (s *MarketingEventService) Find(id string) (*model.MarketingEvent, error) {
+func (s *MarketingEventServiceImpl) Find(id string) (*model.MarketingEvent, error) {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
@@ -80,31 +73,16 @@ func (s *MarketingEventService) Find(id string) (*model.MarketingEvent, error) {
 
 	tx.Commit()
 
-	return &item, nil
+	return item, nil
 }
 
-func (s *MarketingEventService) Update(dto *dto.MarketingEventDTO, id string) error {
+func (s *MarketingEventServiceImpl) Update(itemDTO *dto.MarketingEventDTO, id string) error {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
 
-	participant, _ := dto.Participant.Int64()
-
-	item := model.MarketingEvent{
-		ID:               uuid.MustParse(id),
-		EventName:        dto.EventName,
-		EventTime:        dto.EventTime,
-		EventLocation:    dto.EventLocation,
-		EventType:        dto.EventType,
-		ChannelEvent:     dto.ChannelEvent,
-		MeasurementEvent: dto.MeasurementEvent,
-		Status:           dto.Status,
-		Province:         dto.Province,
-		City:             dto.City,
-		Participant:      participant,
-		PicName:          dto.PicName,
-		SupportName:      dto.SupportName,
-	}
+	item := itemDTO.ToModel()
+	item.ID = uuid.MustParse(id)
 
 	err := s.MarketingEventRepository.Update(tx, item)
 
@@ -117,7 +95,7 @@ func (s *MarketingEventService) Update(dto *dto.MarketingEventDTO, id string) er
 	return nil
 }
 
-func (s *MarketingEventService) Delete(id string) error {
+func (s *MarketingEventServiceImpl) Delete(id string) error {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()

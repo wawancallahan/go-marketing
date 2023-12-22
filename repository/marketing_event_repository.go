@@ -6,28 +6,36 @@ import (
 	"matsukana.cloud/go-marketing/model"
 )
 
-type MarketingEventRepository struct {
+type MarketingEventRepository interface {
+	FindAll(tx *gorm.DB) (*[]model.MarketingEvent, error)
+	Create(tx *gorm.DB, marketingEvent *model.MarketingEvent) error
+	Find(tx *gorm.DB, id string) (*model.MarketingEvent, error)
+	Update(tx *gorm.DB, marketingEvent model.MarketingEvent) error
+	Delete(tx *gorm.DB, id string) error
+}
+
+type MarketingEventRepositoryImpl struct {
 	Db *database.Database
 }
 
-func NewMarketingEventRepository(Db *database.Database) interface{} {
-	return &MarketingEventRepository{Db: Db}
+func NewMarketingEventRepository(Db *database.Database) *MarketingEventRepositoryImpl {
+	return &MarketingEventRepositoryImpl{Db: Db}
 }
 
-func (r *MarketingEventRepository) FindAll(tx *gorm.DB) ([]model.MarketingEvent, error) {
+func (r *MarketingEventRepositoryImpl) FindAll(tx *gorm.DB) (*[]model.MarketingEvent, error) {
 	var marketingEvent []model.MarketingEvent
 
 	err := tx.Find(&marketingEvent).Error
 
 	if err != nil {
-		return marketingEvent, nil
+		return nil, nil
 	}
 
-	return marketingEvent, err
+	return &marketingEvent, err
 }
 
-func (r *MarketingEventRepository) Create(tx *gorm.DB, marketingEvent *model.MarketingEvent) error {
-	err := tx.Create(marketingEvent).Error
+func (r *MarketingEventRepositoryImpl) Create(tx *gorm.DB, marketingEvent *model.MarketingEvent) error {
+	err := tx.Create(&marketingEvent).Error
 
 	if err != nil {
 		return err
@@ -36,19 +44,19 @@ func (r *MarketingEventRepository) Create(tx *gorm.DB, marketingEvent *model.Mar
 	return nil
 }
 
-func (r *MarketingEventRepository) Find(tx *gorm.DB, id string) (model.MarketingEvent, error) {
+func (r *MarketingEventRepositoryImpl) Find(tx *gorm.DB, id string) (*model.MarketingEvent, error) {
 	var marketingEvent model.MarketingEvent
 
-	err := tx.Find(&marketingEvent, id).Error
+	err := tx.Take(&marketingEvent, "id = ?", id).Error
 
 	if err != nil {
-		return marketingEvent, err
+		return nil, err
 	}
 
-	return marketingEvent, nil
+	return &marketingEvent, nil
 }
 
-func (r *MarketingEventRepository) Update(tx *gorm.DB, marketingEvent model.MarketingEvent) error {
+func (r *MarketingEventRepositoryImpl) Update(tx *gorm.DB, marketingEvent model.MarketingEvent) error {
 	err := tx.Save(&marketingEvent).Error
 
 	if err != nil {
@@ -58,10 +66,10 @@ func (r *MarketingEventRepository) Update(tx *gorm.DB, marketingEvent model.Mark
 	return nil
 }
 
-func (r *MarketingEventRepository) Delete(tx *gorm.DB, id string) error {
+func (r *MarketingEventRepositoryImpl) Delete(tx *gorm.DB, id string) error {
 	var marketingEvent model.MarketingEvent
 
-	err := tx.Where("id = ?", id).Delete(marketingEvent).Error
+	err := tx.Where("id = ?", id).Delete(&marketingEvent).Error
 
 	if err != nil {
 		return err

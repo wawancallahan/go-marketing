@@ -1,10 +1,14 @@
 package router
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"matsukana.cloud/go-marketing/controller"
+)
 
-func RegisterRoute(api fiber.Router) {
-	apiV1 := fiber.New()
+func New(marketingEventController controller.MarketingEventController) *fiber.App {
+	api := fiber.New()
 
-	api.Mount("/v1", apiV1)
-	HealthRouter(api)
+	MarketingEventRouter(api, marketingEventController)
+
+	return api
 }
