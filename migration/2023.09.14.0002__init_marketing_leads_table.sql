@@ -14,10 +14,7 @@ CREATE TABLE IF NOT EXISTS public.marketing_leads (
     status VARCHAR NOT NULL,
     activation_status VARCHAR NOT NULL,
     follow_up_by VARCHAR NULL,
-    is_duplicate BOOLEAN DEFAULT false,
     description TEXT NULL,
-    created_by_id uuid CONSTRAINT marketing_leads_created_by_id_users_id_fk REFERENCES pm_auth_internal.users NULL,
-    updated_by_id uuid CONSTRAINT marketing_leads_updated_by_id_users_id_fk REFERENCES pm_auth_internal.users NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
