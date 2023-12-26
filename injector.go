@@ -16,19 +16,19 @@ import (
 
 var MarketingEventSet = wire.NewSet(
 	repository.NewMarketingEventRepository,
-	wire.Bind(new(repository.MarketingEventRepository), new(*repository.MarketingEventRepositoryImpl)),
 	service.NewMarketingEventService,
-	wire.Bind(new(service.MarketingEventService), new(*service.MarketingEventServiceImpl)),
 	controller.NewMarketingEventController,
+	wire.Bind(new(repository.MarketingEventRepository), new(*repository.MarketingEventRepositoryImpl)),
+	wire.Bind(new(service.MarketingEventService), new(*service.MarketingEventServiceImpl)),
 	wire.Bind(new(controller.MarketingEventController), new(*controller.MarketingEventControllerImpl)),
 )
 
 var MarketingLeadSet = wire.NewSet(
 	repository.NewMarketingLeadRepository,
-	wire.Bind(new(repository.MarketingLeadRepository), new(*repository.MarketingLeadRepositoryImpl)),
 	service.NewMarketingLeadService,
-	wire.Bind(new(service.MarketingLeadService), new(*service.MarketingLeadServiceImpl)),
 	controller.NewMarketingLeadController,
+	wire.Bind(new(repository.MarketingLeadRepository), new(*repository.MarketingLeadRepositoryImpl)),
+	wire.Bind(new(service.MarketingLeadService), new(*service.MarketingLeadServiceImpl)),
 	wire.Bind(new(controller.MarketingLeadController), new(*controller.MarketingLeadControllerImpl)),
 )
 
@@ -42,10 +42,8 @@ func InitializedServer() *App {
 	return nil
 }
 
-func InitializedRouter() *fiber.App {
+func InitializedRouter(Db *database.Database) *fiber.App {
 	wire.Build(
-		config.New,
-		database.New,
 		MarketingEventSet,
 		MarketingLeadSet,
 		router.New,

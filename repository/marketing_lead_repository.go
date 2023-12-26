@@ -2,7 +2,6 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/model"
 )
 
@@ -14,12 +13,10 @@ type MarketingLeadRepository interface {
 	Delete(tx *gorm.DB, id string) error
 }
 
-type MarketingLeadRepositoryImpl struct {
-	Db *database.Database
-}
+type MarketingLeadRepositoryImpl struct{}
 
-func NewMarketingLeadRepository(Db *database.Database) *MarketingLeadRepositoryImpl {
-	return &MarketingLeadRepositoryImpl{Db: Db}
+func NewMarketingLeadRepository() *MarketingLeadRepositoryImpl {
+	return &MarketingLeadRepositoryImpl{}
 }
 
 func (r *MarketingLeadRepositoryImpl) FindAll(tx *gorm.DB) (*[]model.MarketingLead, error) {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/google/uuid"
+	"gopkg.in/guregu/null.v4"
 	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/dto"
 	"matsukana.cloud/go-marketing/model"
@@ -47,6 +48,14 @@ func (s *MarketingLeadServiceImpl) Create(itemDTO *dto.MarketingLeadDTO) (*model
 	defer tx.Rollback()
 
 	item := itemDTO.ToModel()
+
+	if item.Status.Valid {
+		item.Status = null.StringFrom("ONGOING")
+	}
+
+	if item.Status.Equal(null.StringFrom("REJECTED")) || item.Status.Equal(null.StringFrom("ONGOING")) {
+		item.FollowUpBy = null.NewString("", false)
+	}
 
 	err := s.MarketingLeadRepository.Create(tx, &item)
 

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"gorm.io/gorm"
-	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/model"
 )
 
@@ -15,11 +14,10 @@ type MarketingEventRepository interface {
 }
 
 type MarketingEventRepositoryImpl struct {
-	Db *database.Database
 }
 
-func NewMarketingEventRepository(Db *database.Database) *MarketingEventRepositoryImpl {
-	return &MarketingEventRepositoryImpl{Db: Db}
+func NewMarketingEventRepository() *MarketingEventRepositoryImpl {
+	return &MarketingEventRepositoryImpl{}
 }
 
 func (r *MarketingEventRepositoryImpl) FindAll(tx *gorm.DB) (*[]model.MarketingEvent, error) {

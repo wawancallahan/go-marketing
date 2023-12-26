@@ -26,14 +26,12 @@ func InitializedServer() *App {
 	return app
 }
 
-func InitializedRouter() *fiber.App {
-	configConfig := config.New()
-	databaseDatabase := database.New(configConfig)
-	marketingEventRepositoryImpl := repository.NewMarketingEventRepository(databaseDatabase)
-	marketingEventServiceImpl := service.NewMarketingEventService(databaseDatabase, marketingEventRepositoryImpl)
+func InitializedRouter(Db *database.Database) *fiber.App {
+	marketingEventRepositoryImpl := repository.NewMarketingEventRepository()
+	marketingEventServiceImpl := service.NewMarketingEventService(Db, marketingEventRepositoryImpl)
 	marketingEventControllerImpl := controller.NewMarketingEventController(marketingEventServiceImpl)
-	marketingLeadRepositoryImpl := repository.NewMarketingLeadRepository(databaseDatabase)
-	marketingLeadServiceImpl := service.NewMarketingLeadService(databaseDatabase, marketingLeadRepositoryImpl)
+	marketingLeadRepositoryImpl := repository.NewMarketingLeadRepository()
+	marketingLeadServiceImpl := service.NewMarketingLeadService(Db, marketingLeadRepositoryImpl)
 	marketingLeadControllerImpl := controller.NewMarketingLeadController(marketingLeadServiceImpl)
 	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl)
 	return app
@@ -41,6 +39,6 @@ func InitializedRouter() *fiber.App {
 
 // injector.go:
 
-var MarketingEventSet = wire.NewSet(repository.NewMarketingEventRepository, wire.Bind(new(repository.MarketingEventRepository), new(*repository.MarketingEventRepositoryImpl)), service.NewMarketingEventService, wire.Bind(new(service.MarketingEventService), new(*service.MarketingEventServiceImpl)), controller.NewMarketingEventController, wire.Bind(new(controller.MarketingEventController), new(*controller.MarketingEventControllerImpl)))
+var MarketingEventSet = wire.NewSet(repository.NewMarketingEventRepository, service.NewMarketingEventService, controller.NewMarketingEventController, wire.Bind(new(repository.MarketingEventRepository), new(*repository.MarketingEventRepositoryImpl)), wire.Bind(new(service.MarketingEventService), new(*service.MarketingEventServiceImpl)), wire.Bind(new(controller.MarketingEventController), new(*controller.MarketingEventControllerImpl)))
 
-var MarketingLeadSet = wire.NewSet(repository.NewMarketingLeadRepository, wire.Bind(new(repository.MarketingLeadRepository), new(*repository.MarketingLeadRepositoryImpl)), service.NewMarketingLeadService, wire.Bind(new(service.MarketingLeadService), new(*service.MarketingLeadServiceImpl)), controller.NewMarketingLeadController, wire.Bind(new(controller.MarketingLeadController), new(*controller.MarketingLeadControllerImpl)))
+var MarketingLeadSet = wire.NewSet(repository.NewMarketingLeadRepository, service.NewMarketingLeadService, controller.NewMarketingLeadController, wire.Bind(new(repository.MarketingLeadRepository), new(*repository.MarketingLeadRepositoryImpl)), wire.Bind(new(service.MarketingLeadService), new(*service.MarketingLeadServiceImpl)), wire.Bind(new(controller.MarketingLeadController), new(*controller.MarketingLeadControllerImpl)))
