@@ -21,20 +21,20 @@ type MarketingEventDTO struct {
 	SupportName      string `json:"supportName" validate:"required"`
 }
 
-func (s *MarketingEventDTO) ToModel() model.MarketingEvent {
-	eventTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", s.EventTime)
+func (d *MarketingEventDTO) ToModel() model.MarketingEvent {
+	eventTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", d.EventTime)
 	return model.MarketingEvent{
-		EventName:        s.EventName,
+		EventName:        d.EventName,
 		EventTime:        eventTime,
-		EventLocation:    s.EventLocation,
-		EventType:        s.EventType,
-		ChannelEvent:     s.ChannelEvent,
-		MeasurementEvent: s.MeasurementEvent,
-		Status:           s.Status,
-		Province:         s.Province,
-		City:             s.City,
-		Participant:      int64(s.Participant),
-		PicName:          s.PicName,
-		SupportName:      s.SupportName,
+		EventLocation:    d.EventLocation,
+		EventType:        d.EventType,
+		ChannelEvent:     d.ChannelEvent,
+		MeasurementEvent: d.MeasurementEvent,
+		Status:           d.Status,
+		Province:         d.Province,
+		City:             d.City,
+		Participant:      int64(d.Participant),
+		PicName:          d.PicName,
+		SupportName:      d.SupportName,
 	}
 }

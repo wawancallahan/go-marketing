@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 
@@ -29,7 +28,7 @@ func main() {
 	app := InitializedServer()
 
 	if app.Db == nil {
-		fmt.Println("failed to connect to database")
+		panic("failed to connect to database")
 	}
 
 	app.registerMiddlewares()

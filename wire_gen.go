@@ -32,10 +32,15 @@ func InitializedRouter() *fiber.App {
 	marketingEventRepositoryImpl := repository.NewMarketingEventRepository(databaseDatabase)
 	marketingEventServiceImpl := service.NewMarketingEventService(databaseDatabase, marketingEventRepositoryImpl)
 	marketingEventControllerImpl := controller.NewMarketingEventController(marketingEventServiceImpl)
-	app := router.New(marketingEventControllerImpl)
+	marketingLeadRepositoryImpl := repository.NewMarketingLeadRepository(databaseDatabase)
+	marketingLeadServiceImpl := service.NewMarketingLeadService(databaseDatabase, marketingLeadRepositoryImpl)
+	marketingLeadControllerImpl := controller.NewMarketingLeadController(marketingLeadServiceImpl)
+	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl)
 	return app
 }
 
 // injector.go:
 
 var MarketingEventSet = wire.NewSet(repository.NewMarketingEventRepository, wire.Bind(new(repository.MarketingEventRepository), new(*repository.MarketingEventRepositoryImpl)), service.NewMarketingEventService, wire.Bind(new(service.MarketingEventService), new(*service.MarketingEventServiceImpl)), controller.NewMarketingEventController, wire.Bind(new(controller.MarketingEventController), new(*controller.MarketingEventControllerImpl)))
+
+var MarketingLeadSet = wire.NewSet(repository.NewMarketingLeadRepository, wire.Bind(new(repository.MarketingLeadRepository), new(*repository.MarketingLeadRepositoryImpl)), service.NewMarketingLeadService, wire.Bind(new(service.MarketingLeadService), new(*service.MarketingLeadServiceImpl)), controller.NewMarketingLeadController, wire.Bind(new(controller.MarketingLeadController), new(*controller.MarketingLeadControllerImpl)))
