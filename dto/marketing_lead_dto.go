@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"database/sql"
 	"time"
 
 	"gopkg.in/guregu/null.v4"
@@ -32,21 +33,30 @@ func (d *MarketingLeadDTO) ToModel() model.MarketingLead {
 	registeredDate := time.Now().In(tz)
 
 	return model.MarketingLead{
-		ProductCategory:  d.ProductCategory,
-		FullName:         d.FullName,
-		CompanyName:      d.CompanyName,
-		Address:          d.Address,
-		Email:            d.Email,
-		PhoneNumber:      d.PhoneNumber,
-		Province:         d.Province,
-		City:             d.City,
-		District:         d.District,
-		RegisteredDate:   registeredDate,
-		SourceType:       d.SourceType,
-		Status:           d.Status,
+		ProductCategory: d.ProductCategory,
+		FullName:        d.FullName,
+		CompanyName:     d.CompanyName,
+		Address: sql.NullString{
+			String: d.Address.String,
+			Valid:  d.Address.Valid,
+		},
+		Email:          d.Email,
+		PhoneNumber:    d.PhoneNumber,
+		Province:       d.Province,
+		City:           d.City,
+		District:       d.District,
+		RegisteredDate: registeredDate,
+		SourceType:     d.SourceType,
+		Status: sql.NullString{
+			String: d.Status.String,
+			Valid:  d.Status.Valid,
+		},
 		ActivationStatus: d.ActivationStatus,
-		FollowUpBy:       d.FollowUpBy,
-		Description:      d.Description,
-		SupportName:      d.SupportName,
+		FollowUpBy: sql.NullString{
+			String: d.FollowUpBy.String,
+			Valid:  d.FollowUpBy.Valid,
+		},
+		Description: d.Description,
+		SupportName: d.SupportName,
 	}
 }

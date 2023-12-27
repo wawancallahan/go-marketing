@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/dto"
@@ -48,6 +50,20 @@ func (s *MarketingEventServiceImpl) Create(itemDTO *dto.MarketingEventDTO) (*mod
 
 	item := itemDTO.ToModel()
 
+	tz, _ := time.LoadLocation("Asia/Jakarta")
+
+	now := time.Now().In(tz)
+
+	diffDays := item.EventTime.Sub(now).Hours() / 24
+
+	if diffDays > 0 {
+		item.Status = "UPCOMING"
+	} else if diffDays < 0 {
+		item.Status = "COMPLETED"
+	} else {
+		item.Status = "ONGOING"
+	}
+
 	err := s.MarketingEventRepository.Create(tx, &item)
 
 	if err != nil {
@@ -83,6 +99,20 @@ func (s *MarketingEventServiceImpl) Update(itemDTO *dto.MarketingEventDTO, id st
 
 	item := itemDTO.ToModel()
 	item.ID = uuid.MustParse(id)
+
+	tz, _ := time.LoadLocation("Asia/Jakarta")
+
+	now := time.Now().In(tz)
+
+	diffDays := item.EventTime.Sub(now).Hours() / 24
+
+	if diffDays > 0 {
+		item.Status = "UPCOMING"
+	} else if diffDays < 0 {
+		item.Status = "COMPLETED"
+	} else {
+		item.Status = "ONGOING"
+	}
 
 	err := s.MarketingEventRepository.Update(tx, item)
 

@@ -47,15 +47,15 @@ func (s *MarketingLeadServiceImpl) Create(itemDTO *dto.MarketingLeadDTO) (*model
 
 	defer tx.Rollback()
 
+	if itemDTO.Status.Valid {
+		itemDTO.Status = null.NewString("ONGOING", true)
+	}
+
+	if itemDTO.Status.Equal(null.StringFrom("REJECTED")) || itemDTO.Status.Equal(null.StringFrom("ONGOING")) {
+		itemDTO.FollowUpBy = null.NewString("", false)
+	}
+
 	item := itemDTO.ToModel()
-
-	if item.Status.Valid {
-		item.Status = null.StringFrom("ONGOING")
-	}
-
-	if item.Status.Equal(null.StringFrom("REJECTED")) || item.Status.Equal(null.StringFrom("ONGOING")) {
-		item.FollowUpBy = null.NewString("", false)
-	}
 
 	err := s.MarketingLeadRepository.Create(tx, &item)
 
@@ -89,6 +89,14 @@ func (s *MarketingLeadServiceImpl) Update(itemDTO *dto.MarketingLeadDTO, id stri
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
+
+	if itemDTO.Status.Valid {
+		itemDTO.Status = null.NewString("ONGOING", true)
+	}
+
+	if itemDTO.Status.Equal(null.StringFrom("REJECTED")) || itemDTO.Status.Equal(null.StringFrom("ONGOING")) {
+		itemDTO.FollowUpBy = null.NewString("", false)
+	}
 
 	item := itemDTO.ToModel()
 	item.ID = uuid.MustParse(id)
