@@ -9,7 +9,7 @@ type MarketingLeadRepository interface {
 	FindAll(tx *gorm.DB) (*[]model.MarketingLead, error)
 	Create(tx *gorm.DB, marketingLead *model.MarketingLead) error
 	Find(tx *gorm.DB, id string) (*model.MarketingLead, error)
-	Update(tx *gorm.DB, marketingLead model.MarketingLead) error
+	Update(tx *gorm.DB, marketingLead *model.MarketingLead) error
 	Delete(tx *gorm.DB, id string) error
 }
 
@@ -53,7 +53,7 @@ func (r *MarketingLeadRepositoryImpl) Find(tx *gorm.DB, id string) (*model.Marke
 	return &marketingLead, nil
 }
 
-func (r *MarketingLeadRepositoryImpl) Update(tx *gorm.DB, marketingLead model.MarketingLead) error {
+func (r *MarketingLeadRepositoryImpl) Update(tx *gorm.DB, marketingLead *model.MarketingLead) error {
 	err := tx.Save(&marketingLead).Error
 
 	if err != nil {

@@ -108,6 +108,24 @@ func (c *MarketingLeadControllerImpl) Update(ctx *fiber.Ctx) error {
 	var itemDTO dto.MarketingLeadDTO
 	id := ctx.Params("id")
 
+	file, err := ctx.FormFile("file")
+
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
+			Code:   fiber.StatusBadRequest,
+			Status: "NOK",
+			Data:   nil,
+		})
+	}
+
+	if file == nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
+			Code:   fiber.StatusBadRequest,
+			Status: "NOK",
+			Data:   nil,
+		})
+	}
+
 	if err := ctx.BodyParser(&itemDTO); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
 			Code:   fiber.StatusBadRequest,
@@ -126,7 +144,9 @@ func (c *MarketingLeadControllerImpl) Update(ctx *fiber.Ctx) error {
 		})
 	}
 
-	err := c.MarketingLeadService.Update(&itemDTO, id)
+	itemDTO.File = file
+
+	item, err := c.MarketingLeadService.Update(&itemDTO, id)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
@@ -139,7 +159,7 @@ func (c *MarketingLeadControllerImpl) Update(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response.WebResponse{
 		Code:   fiber.StatusOK,
 		Status: "OK",
-		Data:   nil,
+		Data:   item,
 	})
 }
 

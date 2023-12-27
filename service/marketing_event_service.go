@@ -14,7 +14,7 @@ type MarketingEventService interface {
 	Index() (*[]model.MarketingEvent, error)
 	Create(itemDTO *dto.MarketingEventDTO) (*model.MarketingEvent, error)
 	Find(id string) (*model.MarketingEvent, error)
-	Update(itemDTO *dto.MarketingEventDTO, id string) error
+	Update(itemDTO *dto.MarketingEventDTO, id string) (*model.MarketingEvent, error)
 	Delete(id string) error
 }
 
@@ -92,7 +92,7 @@ func (s *MarketingEventServiceImpl) Find(id string) (*model.MarketingEvent, erro
 	return item, nil
 }
 
-func (s *MarketingEventServiceImpl) Update(itemDTO *dto.MarketingEventDTO, id string) error {
+func (s *MarketingEventServiceImpl) Update(itemDTO *dto.MarketingEventDTO, id string) (*model.MarketingEvent, error) {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
@@ -114,15 +114,15 @@ func (s *MarketingEventServiceImpl) Update(itemDTO *dto.MarketingEventDTO, id st
 		item.Status = "ONGOING"
 	}
 
-	err := s.MarketingEventRepository.Update(tx, item)
+	err := s.MarketingEventRepository.Update(tx, &item)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tx.Commit()
 
-	return nil
+	return &item, nil
 }
 
 func (s *MarketingEventServiceImpl) Delete(id string) error {

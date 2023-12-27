@@ -2,6 +2,7 @@ package dto
 
 import (
 	"database/sql"
+	"mime/multipart"
 	"time"
 
 	"gopkg.in/guregu/null.v4"
@@ -9,22 +10,23 @@ import (
 )
 
 type MarketingLeadDTO struct {
-	ProductCategory  string      `json:"productCategory" validate:"required;oneof='Pinjam Modal Inventory' 'Pinjam Modal Usaha' 'Pinjam Modal Toko' 'Pinjam Modal Karyawan'"`
-	FullName         string      `json:"fullName" validate:"required"`
-	CompanyName      string      `json:"companyName" validate:"required"`
-	Address          null.String `json:"address" validate:"omitempty"`
-	Email            string      `json:"email" validate:"required"`
-	PhoneNumber      string      `json:"phoneNumber" validate:"required"`
-	Province         string      `json:"province" validate:"required"`
-	City             string      `json:"city" validate:"required"`
-	District         string      `json:"district" validate:"required"`
-	RegisteredDate   string      `json:"registeredDate" validate:"omitempty"`
-	SourceType       string      `json:"sourceType" validate:"required;oneof='EVENT_OFFLINE' 'EVENT_ONLINE' 'DASHBOARD_INTERNAL' 'OFFICIAL_WEBSITE'"`
-	Status           null.String `json:"status" validate:"omitempty"`
-	ActivationStatus string      `json:"activationStatus" validate:"required"`
-	FollowUpBy       null.String `json:"followUpBy" validate:"omitempty"`
-	Description      string      `json:"description" validate:"required"`
-	SupportName      string      `json:"supportName" validate:"required"`
+	ProductCategory  string                `form:"productCategory" validate:"required;oneof='Pinjam Modal Inventory' 'Pinjam Modal Usaha' 'Pinjam Modal Toko' 'Pinjam Modal Karyawan'"`
+	FullName         string                `form:"fullName" validate:"required"`
+	CompanyName      string                `form:"companyName" validate:"required"`
+	Address          null.String           `form:"address" validate:"omitempty"`
+	Email            string                `form:"email" validate:"required"`
+	PhoneNumber      string                `form:"phoneNumber" validate:"required"`
+	Province         string                `form:"province" validate:"required"`
+	City             string                `form:"city" validate:"required"`
+	District         string                `form:"district" validate:"required"`
+	RegisteredDate   string                `form:"registeredDate" validate:"omitempty"`
+	SourceType       string                `form:"sourceType" validate:"required;oneof='EVENT_OFFLINE' 'EVENT_ONLINE' 'DASHBOARD_INTERNAL' 'OFFICIAL_WEBSITE'"`
+	Status           null.String           `form:"status" validate:"omitempty"`
+	ActivationStatus string                `form:"activationStatus" validate:"required"`
+	FollowUpBy       null.String           `form:"followUpBy" validate:"omitempty"`
+	Description      string                `form:"description" validate:"required"`
+	SupportName      string                `form:"supportName" validate:"required"`
+	File             *multipart.FileHeader `form:"-"`
 }
 
 func (d *MarketingLeadDTO) ToModel() model.MarketingLead {

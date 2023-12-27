@@ -9,7 +9,7 @@ type MarketingEventRepository interface {
 	FindAll(tx *gorm.DB) (*[]model.MarketingEvent, error)
 	Create(tx *gorm.DB, marketingEvent *model.MarketingEvent) error
 	Find(tx *gorm.DB, id string) (*model.MarketingEvent, error)
-	Update(tx *gorm.DB, marketingEvent model.MarketingEvent) error
+	Update(tx *gorm.DB, marketingEvent *model.MarketingEvent) error
 	Delete(tx *gorm.DB, id string) error
 }
 
@@ -54,7 +54,7 @@ func (r *MarketingEventRepositoryImpl) Find(tx *gorm.DB, id string) (*model.Mark
 	return &marketingEvent, nil
 }
 
-func (r *MarketingEventRepositoryImpl) Update(tx *gorm.DB, marketingEvent model.MarketingEvent) error {
+func (r *MarketingEventRepositoryImpl) Update(tx *gorm.DB, marketingEvent *model.MarketingEvent) error {
 	err := tx.Save(&marketingEvent).Error
 
 	if err != nil {

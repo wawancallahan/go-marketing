@@ -1,6 +1,13 @@
 package service
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"log"
+	"mime/multipart"
+	"net/http"
+
 	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v4"
 	"matsukana.cloud/go-marketing/database"
@@ -13,7 +20,7 @@ type MarketingLeadService interface {
 	Index() (*[]model.MarketingLead, error)
 	Create(itemDTO *dto.MarketingLeadDTO) (*model.MarketingLead, error)
 	Find(id string) (*model.MarketingLead, error)
-	Update(itemDTO *dto.MarketingLeadDTO, id string) error
+	Update(itemDTO *dto.MarketingLeadDTO, id string) (*model.MarketingLead, error)
 	Delete(id string) error
 }
 
@@ -85,7 +92,7 @@ func (s *MarketingLeadServiceImpl) Find(id string) (*model.MarketingLead, error)
 	return item, nil
 }
 
-func (s *MarketingLeadServiceImpl) Update(itemDTO *dto.MarketingLeadDTO, id string) error {
+func (s *MarketingLeadServiceImpl) Update(itemDTO *dto.MarketingLeadDTO, id string) (*model.MarketingLead, error) {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
@@ -101,15 +108,68 @@ func (s *MarketingLeadServiceImpl) Update(itemDTO *dto.MarketingLeadDTO, id stri
 	item := itemDTO.ToModel()
 	item.ID = uuid.MustParse(id)
 
-	err := s.MarketingLeadRepository.Update(tx, item)
+	err := s.MarketingLeadRepository.Update(tx, &item)
 
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	if itemDTO.File != nil {
+		f, _ := itemDTO.File.Open()
+
+		defer f.Close()
+
+		var requestBody bytes.Buffer
+
+		multiPartWriter := multipart.NewWriter(&requestBody)
+
+		fileWriter, err := multiPartWriter.CreateFormFile("file", "name.txt")
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = io.Copy(fileWriter, f)
+		if err != nil {
+			return nil, err
+		}
+
+		// Populate Other Field
+		fieldWriter, err := multiPartWriter.CreateFormField("filename")
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = fieldWriter.Write([]byte("INI TES"))
+		if err != nil {
+			return nil, err
+		}
+
+		multiPartWriter.Close()
+
+		request, err := http.NewRequest("POST", "URL", &requestBody)
+		if err != nil {
+			return nil, err
+		}
+
+		request.Header.Set("Content-Type", multiPartWriter.FormDataContentType())
+
+		client := &http.Client{}
+		response, err := client.Do(request)
+		if err != nil {
+			return nil, err
+		}
+
+		var result map[string]interface{}
+
+		json.NewDecoder(response.Body).Decode(&result)
+
+		log.Println(result)
+
 	}
 
 	tx.Commit()
 
-	return nil
+	return &item, nil
 }
 
 func (s *MarketingLeadServiceImpl) Delete(id string) error {

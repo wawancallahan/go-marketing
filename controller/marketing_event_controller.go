@@ -126,7 +126,7 @@ func (c *MarketingEventControllerImpl) Update(ctx *fiber.Ctx) error {
 		})
 	}
 
-	err := c.MarketingEventService.Update(&itemDTO, id)
+	item, err := c.MarketingEventService.Update(&itemDTO, id)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
@@ -139,7 +139,7 @@ func (c *MarketingEventControllerImpl) Update(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response.WebResponse{
 		Code:   fiber.StatusOK,
 		Status: "OK",
-		Data:   nil,
+		Data:   item,
 	})
 }
 
