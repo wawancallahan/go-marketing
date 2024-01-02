@@ -33,7 +33,10 @@ func InitializedRouter(Db *database.Database) *fiber.App {
 	marketingLeadRepositoryImpl := repository.NewMarketingLeadRepository()
 	marketingLeadServiceImpl := service.NewMarketingLeadService(Db, marketingLeadRepositoryImpl)
 	marketingLeadControllerImpl := controller.NewMarketingLeadController(marketingLeadServiceImpl)
-	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl)
+	blogCategoryRepositoryImpl := repository.NewBlogCategoryRepository()
+	blogCategoryServiceImpl := service.NewBlogCategoryService(Db, blogCategoryRepositoryImpl)
+	blogCategoryControllerImpl := controller.NewBlogCategoryController(blogCategoryServiceImpl)
+	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl, blogCategoryControllerImpl)
 	return app
 }
 
@@ -42,3 +45,5 @@ func InitializedRouter(Db *database.Database) *fiber.App {
 var MarketingEventSet = wire.NewSet(repository.NewMarketingEventRepository, service.NewMarketingEventService, controller.NewMarketingEventController, wire.Bind(new(repository.MarketingEventRepository), new(*repository.MarketingEventRepositoryImpl)), wire.Bind(new(service.MarketingEventService), new(*service.MarketingEventServiceImpl)), wire.Bind(new(controller.MarketingEventController), new(*controller.MarketingEventControllerImpl)))
 
 var MarketingLeadSet = wire.NewSet(repository.NewMarketingLeadRepository, service.NewMarketingLeadService, controller.NewMarketingLeadController, wire.Bind(new(repository.MarketingLeadRepository), new(*repository.MarketingLeadRepositoryImpl)), wire.Bind(new(service.MarketingLeadService), new(*service.MarketingLeadServiceImpl)), wire.Bind(new(controller.MarketingLeadController), new(*controller.MarketingLeadControllerImpl)))
+
+var BlogCategorySet = wire.NewSet(repository.NewBlogCategoryRepository, service.NewBlogCategoryService, controller.NewBlogCategoryController, wire.Bind(new(repository.BlogCategoryRepository), new(*repository.BlogCategoryRepositoryImpl)), wire.Bind(new(service.BlogCategoryService), new(*service.BlogCategoryServiceImpl)), wire.Bind(new(controller.BlogCategoryController), new(*controller.BlogCategoryControllerImpl)))
