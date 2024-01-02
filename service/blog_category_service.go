@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/dto"
@@ -48,7 +50,17 @@ func (s *BlogCategoryServiceImpl) Create(itemDTO *dto.BlogCategoryDTO) (*model.B
 
 	item := itemDTO.ToModel()
 
-	err := s.BlogCategoryRepository.Create(tx, &item)
+	blogCategoryItem, err := s.BlogCategoryRepository.FindBySlug(tx, item.Slug)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if blogCategoryItem != nil {
+		return nil, errors.New("Slug Duplicate")
+	}
+
+	err = s.BlogCategoryRepository.Create(tx, &item)
 
 	if err != nil {
 		return nil, err
@@ -71,6 +83,10 @@ func (s *BlogCategoryServiceImpl) Find(id string) (*model.BlogCategory, error) {
 		return nil, err
 	}
 
+	if item == nil {
+		return nil, errors.New("Data Not Found")
+	}
+
 	tx.Commit()
 
 	return item, nil
@@ -84,9 +100,29 @@ func (s *BlogCategoryServiceImpl) Update(itemDTO *dto.BlogCategoryDTO, id string
 	item := itemDTO.ToModel()
 	item.ID = uuid.MustParse(id)
 
-	err := s.BlogCategoryRepository.Update(tx, &item)
+	blogCategoryItem, err := s.BlogCategoryRepository.Find(tx, item.ID.String())
 
 	if err != nil {
+		return nil, err
+	}
+
+	if blogCategoryItem == nil {
+		return nil, errors.New("Data Not Found")
+	}
+
+	if blogCategoryItem.Slug == item.Slug {
+		blogCategoryItemSlug, err := s.BlogCategoryRepository.FindBySlugWithoutId(tx, item.Slug, item.ID.String())
+
+		if err != nil {
+			return nil, err
+		}
+
+		if blogCategoryItemSlug != nil {
+			return nil, errors.New("Slug Duplicate")
+		}
+	}
+
+	if err = s.BlogCategoryRepository.Update(tx, &item); err != nil {
 		return nil, err
 	}
 

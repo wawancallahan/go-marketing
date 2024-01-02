@@ -26,10 +26,10 @@ func (r *MarketingEventRepositoryImpl) FindAll(tx *gorm.DB) (*[]model.MarketingE
 	err := tx.Find(&marketingEvent).Error
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
-	return &marketingEvent, err
+	return &marketingEvent, nil
 }
 
 func (r *MarketingEventRepositoryImpl) Create(tx *gorm.DB, marketingEvent *model.MarketingEvent) error {

@@ -15,7 +15,7 @@ var (
 	validate *validator.Validate
 )
 
-func SetupValidation(value interface{}) []error {
+func SetupValidation(value interface{}) []string {
 	validate = validator.New()
 
 	// Custom validation for uuid.UUID fields.
@@ -43,7 +43,14 @@ func SetupValidation(value interface{}) []error {
 	err := validate.Struct(value)
 	errs := TranslateError(err, trans)
 
-	return errs
+	// errs to string
+	errsValue := make([]string, 0)
+
+	for _, errItem := range errs {
+		errsValue = append(errsValue, errItem.Error())
+	}
+
+	return errsValue
 }
 
 func TranslateError(err error, trans ut.Translator) (errs []error) {

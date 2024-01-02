@@ -6,7 +6,7 @@ import (
 )
 
 func BlogCategoryRouter(api fiber.Router, controller controller.BlogCategoryController) {
-	route := api.Group("/events")
+	route := api.Group("/blog/category")
 
 	route.Get("/", controller.Index)
 	route.Post("/create", controller.Create)

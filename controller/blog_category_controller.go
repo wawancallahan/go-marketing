@@ -2,7 +2,9 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"gopkg.in/guregu/null.v4"
 	"matsukana.cloud/go-marketing/dto"
+	"matsukana.cloud/go-marketing/mapper"
 	"matsukana.cloud/go-marketing/response"
 	"matsukana.cloud/go-marketing/service"
 	"matsukana.cloud/go-marketing/validation"
@@ -36,10 +38,26 @@ func (c *BlogCategoryControllerImpl) Index(ctx *fiber.Ctx) error {
 		})
 	}
 
+	result := make([]mapper.BlogCategoryMapper, 0)
+
+	if items != nil {
+		for _, item := range *items {
+			result = append(result, mapper.BlogCategoryMapper{
+				ID:          item.ID,
+				Name:        item.Name,
+				Slug:        item.Slug,
+				IsActive:    item.IsActive,
+				Description: null.NewString(item.Description.String, item.Description.Valid),
+				CreatedAt:   item.CreatedAt,
+				UpdatedAt:   item.UpdatedAt,
+			})
+		}
+	}
+
 	return ctx.Status(fiber.StatusOK).JSON(response.WebResponse{
 		Code:   fiber.StatusOK,
 		Status: "OK",
-		Data:   &items,
+		Data:   result,
 	})
 }
 
@@ -79,7 +97,15 @@ func (c *BlogCategoryControllerImpl) Create(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response.WebResponse{
 		Code:   fiber.StatusOK,
 		Status: "OK",
-		Data:   item,
+		Data: mapper.BlogCategoryMapper{
+			ID:          item.ID,
+			Name:        item.Name,
+			Slug:        item.Slug,
+			IsActive:    item.IsActive,
+			Description: null.NewString(item.Description.String, item.Description.Valid),
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		},
 	})
 }
 
@@ -100,7 +126,15 @@ func (c *BlogCategoryControllerImpl) Find(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response.WebResponse{
 		Code:   fiber.StatusOK,
 		Status: "OK",
-		Data:   item,
+		Data: mapper.BlogCategoryMapper{
+			ID:          item.ID,
+			Name:        item.Name,
+			Slug:        item.Slug,
+			IsActive:    item.IsActive,
+			Description: null.NewString(item.Description.String, item.Description.Valid),
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		},
 	})
 }
 
@@ -122,7 +156,7 @@ func (c *BlogCategoryControllerImpl) Update(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
-			Data:   nil,
+			Error:  errs,
 		})
 	}
 
@@ -132,14 +166,22 @@ func (c *BlogCategoryControllerImpl) Update(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
-			Data:   nil,
+			Error:  err.Error(),
 		})
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response.WebResponse{
 		Code:   fiber.StatusOK,
 		Status: "OK",
-		Data:   item,
+		Data: mapper.BlogCategoryMapper{
+			ID:          item.ID,
+			Name:        item.Name,
+			Slug:        item.Slug,
+			IsActive:    item.IsActive,
+			Description: null.NewString(item.Description.String, item.Description.Valid),
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		},
 	})
 }
 
@@ -152,7 +194,7 @@ func (c *BlogCategoryControllerImpl) Delete(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
-			Data:   nil,
+			Data:   err.Error(),
 		})
 	}
 

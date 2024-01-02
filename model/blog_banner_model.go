@@ -5,11 +5,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type BlogBanner struct {
-	gorm.Model
 	ID        uuid.UUID      `gorm:"primary_key;column:id;type:uuid;default:gen_random_uuid();<-:create"`
 	Name      string         `gorm:"column:name"`
 	FileName  sql.NullString `gorm:"column:file_name"`

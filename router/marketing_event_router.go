@@ -6,7 +6,7 @@ import (
 )
 
 func MarketingEventRouter(api fiber.Router, controller controller.MarketingEventController) {
-	route := api.Group("/events")
+	route := api.Group("/marketing/events")
 
 	route.Get("/", controller.Index)
 	route.Post("/create", controller.Create)

@@ -25,10 +25,10 @@ func (r *MarketingLeadRepositoryImpl) FindAll(tx *gorm.DB) (*[]model.MarketingLe
 	err := tx.Find(&marketingLead).Error
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
-	return &marketingLead, err
+	return &marketingLead, nil
 }
 
 func (r *MarketingLeadRepositoryImpl) Create(tx *gorm.DB, marketingLead *model.MarketingLead) error {
