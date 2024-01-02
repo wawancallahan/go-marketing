@@ -1,13 +1,6 @@
 package service
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
-	"log"
-	"mime/multipart"
-	"net/http"
-
 	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v4"
 	"matsukana.cloud/go-marketing/database"
@@ -114,58 +107,47 @@ func (s *MarketingLeadServiceImpl) Update(itemDTO *dto.MarketingLeadDTO, id stri
 		return nil, err
 	}
 
-	if itemDTO.File != nil {
-		f, _ := itemDTO.File.Open()
+	// if itemDTO.File != nil {
+	// 	f, _ := itemDTO.File.Open()
 
-		defer f.Close()
+	// 	defer f.Close()
 
-		var requestBody bytes.Buffer
+	// 	var requestBody bytes.Buffer
 
-		multiPartWriter := multipart.NewWriter(&requestBody)
+	// 	multiPartWriter := multipart.NewWriter(&requestBody)
 
-		fileWriter, err := multiPartWriter.CreateFormFile("file", "name.txt")
-		if err != nil {
-			return nil, err
-		}
+	// 	// Populate File
+	// 	fileWriter, err := multiPartWriter.CreateFormFile("file", "name.txt")
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		_, err = io.Copy(fileWriter, f)
-		if err != nil {
-			return nil, err
-		}
+	// 	_, err = io.Copy(fileWriter, f)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	// End Populate File
 
-		// Populate Other Field
-		fieldWriter, err := multiPartWriter.CreateFormField("filename")
-		if err != nil {
-			return nil, err
-		}
+	// 	// Populate Other Field
+	// 	fieldWriter, err := multiPartWriter.CreateFormField("filename")
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-		_, err = fieldWriter.Write([]byte("INI TES"))
-		if err != nil {
-			return nil, err
-		}
+	// 	_, err = fieldWriter.Write([]byte("INI TES"))
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	// End Popilate
 
-		multiPartWriter.Close()
+	// 	multiPartWriter.Close()
 
-		request, err := http.NewRequest("POST", "URL", &requestBody)
-		if err != nil {
-			return nil, err
-		}
+	// 	var result map[string]interface{}
 
-		request.Header.Set("Content-Type", multiPartWriter.FormDataContentType())
+	// 	httprequest.RequestPostForm(string(http.MethodPost), "", multiPartWriter, requestBody, result)
 
-		client := &http.Client{}
-		response, err := client.Do(request)
-		if err != nil {
-			return nil, err
-		}
-
-		var result map[string]interface{}
-
-		json.NewDecoder(response.Body).Decode(&result)
-
-		log.Println(result)
-
-	}
+	// 	// Log Result Response
+	// }
 
 	tx.Commit()
 
