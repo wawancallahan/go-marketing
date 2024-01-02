@@ -75,7 +75,7 @@ func (c *BlogBannerControllerImpl) Update(ctx *fiber.Ctx) error {
 			Code:   fiber.StatusBadRequest,
 			Status: "NOK",
 			Data:   nil,
-			Error:  errors.New("FIle Required").Error(),
+			Error:  errors.New("File Required").Error(),
 		})
 	}
 
@@ -101,7 +101,7 @@ func (c *BlogBannerControllerImpl) Update(ctx *fiber.Ctx) error {
 			FileName:  null.NewString(item.FileName.String, item.FileName.Valid),
 			Path:      null.NewString(item.Path.String, item.Path.Valid),
 			Url:       null.NewString(item.Url.String, item.Url.Valid),
-			MimeType:  null.NewString(item.Url.String, item.Url.Valid),
+			MimeType:  null.NewString(item.MimeType.String, item.MimeType.Valid),
 			CreatedAt: item.CreatedAt,
 			UpdatedAt: item.UpdatedAt,
 		},

@@ -13,8 +13,8 @@ type BlogCategory struct {
 	Slug        string         `gorm:"column:slug"`
 	IsActive    bool           `gorm:"column:is_active"`
 	Description sql.NullString `gorm:"column:description"`
-	CreatedAt   time.Time      `gorm:"column:created_at;autoCreateTime" json:"createdAt"`
-	UpdatedAt   time.Time      `gorm:"column:updated_at;autoCreateTime;autoUpdateTime" json:"updatedAt"`
+	CreatedAt   time.Time      `gorm:"column:created_at;autoCreateTime;<-:create"`
+	UpdatedAt   time.Time      `gorm:"column:updated_at;autoCreateTime;autoUpdateTime"`
 }
 
 func (m *BlogCategory) TableName() string {

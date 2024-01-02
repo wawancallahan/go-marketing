@@ -14,8 +14,8 @@ type BlogBanner struct {
 	Path      sql.NullString `gorm:"column:path"`
 	Url       sql.NullString `gorm:"column:url"`
 	MimeType  sql.NullString `gorm:"column:mime_type"`
-	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime" json:"createdAt"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;autoCreateTime;autoUpdateTime" json:"updatedAt"`
+	CreatedAt time.Time      `gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;autoCreateTime;autoUpdateTime"`
 }
 
 func (m *BlogBanner) TableName() string {

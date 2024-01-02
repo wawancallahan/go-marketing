@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 
 	"github.com/gabriel-vasile/mimetype"
@@ -75,6 +76,8 @@ func (s *BlogBannerServiceImpl) Update(file *multipart.FileHeader, id string) (*
 
 	mtype := mimetype.Detect(byteFile)
 
+	log.Printf("%s", mtype.String())
+
 	filePath := "upload/blog/banners"
 
 	// TODO: Upload to OSS
@@ -85,7 +88,7 @@ func (s *BlogBannerServiceImpl) Update(file *multipart.FileHeader, id string) (*
 		ID:   uuid.MustParse(id),
 		Name: blogBannerItem.Name,
 		FileName: sql.NullString{
-			String: fmt.Sprintf("%s_%s.%s", uuid.New(), id, mtype.Extension()),
+			String: fmt.Sprintf("%s_%s%s", uuid.New(), id, mtype.Extension()),
 			Valid:  true,
 		},
 		MimeType: sql.NullString{
@@ -100,6 +103,7 @@ func (s *BlogBannerServiceImpl) Update(file *multipart.FileHeader, id string) (*
 			String: urlPath,
 			Valid:  true,
 		},
+		CreatedAt: blogBannerItem.CreatedAt,
 	}
 
 	if err := s.BlogBannerRepository.Update(tx, &item); err != nil {
