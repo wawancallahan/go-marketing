@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
 	"gopkg.in/guregu/null.v4"
 	"matsukana.cloud/go-marketing/dto"
@@ -78,6 +80,7 @@ func (c *BlogArticleControllerImpl) Create(ctx *fiber.Ctx) error {
 			Error:  err.Error(),
 		})
 	}
+
 	errs := validation.SetupValidation(itemDTO)
 
 	if len(errs) > 0 {
@@ -88,6 +91,28 @@ func (c *BlogArticleControllerImpl) Create(ctx *fiber.Ctx) error {
 			Error:  errs,
 		})
 	}
+
+	file, err := ctx.FormFile("file")
+
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
+			Code:   fiber.StatusBadRequest,
+			Status: "NOK",
+			Data:   nil,
+			Error:  err.Error(),
+		})
+	}
+
+	if file == nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
+			Code:   fiber.StatusBadRequest,
+			Status: "NOK",
+			Data:   nil,
+			Error:  errors.New("File Required").Error(),
+		})
+	}
+
+	itemDTO.File = file
 
 	item, err := c.BlogArticleService.Create(&itemDTO)
 
@@ -177,6 +202,19 @@ func (c *BlogArticleControllerImpl) Update(ctx *fiber.Ctx) error {
 			Error:  errs,
 		})
 	}
+
+	file, err := ctx.FormFile("file")
+
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{
+			Code:   fiber.StatusBadRequest,
+			Status: "NOK",
+			Data:   nil,
+			Error:  err.Error(),
+		})
+	}
+
+	itemDTO.File = file
 
 	item, err := c.BlogArticleService.Update(&itemDTO, id)
 
