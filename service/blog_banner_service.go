@@ -6,18 +6,18 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"mime/multipart"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"matsukana.cloud/go-marketing/database"
+	"matsukana.cloud/go-marketing/dto"
 	"matsukana.cloud/go-marketing/model"
 	"matsukana.cloud/go-marketing/repository"
 )
 
 type BlogBannerService interface {
 	Index() (*[]model.BlogBanner, error)
-	Update(file *multipart.FileHeader, id string) (*model.BlogBanner, error)
+	Update(itemDTO dto.BlogBannerUpdateDTO, id string) (*model.BlogBanner, error)
 }
 
 type BlogBannerServiceImpl struct {
@@ -45,7 +45,7 @@ func (s *BlogBannerServiceImpl) Index() (*[]model.BlogBanner, error) {
 	return items, nil
 }
 
-func (s *BlogBannerServiceImpl) Update(file *multipart.FileHeader, id string) (*model.BlogBanner, error) {
+func (s *BlogBannerServiceImpl) Update(itemDTO dto.BlogBannerUpdateDTO, id string) (*model.BlogBanner, error) {
 	tx := s.Db.Begin()
 
 	defer tx.Rollback()
@@ -60,7 +60,7 @@ func (s *BlogBannerServiceImpl) Update(file *multipart.FileHeader, id string) (*
 		return nil, errors.New("Data Not Found")
 	}
 
-	openFile, err := file.Open()
+	openFile, err := itemDTO.File.Open()
 
 	defer openFile.Close()
 

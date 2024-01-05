@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gopkg.in/guregu/null.v4"
+	"matsukana.cloud/go-marketing/dto"
 	"matsukana.cloud/go-marketing/mapper"
 	"matsukana.cloud/go-marketing/response"
 	"matsukana.cloud/go-marketing/service"
@@ -81,7 +82,7 @@ func (c *BlogBannerControllerImpl) Update(ctx *fiber.Ctx) error {
 
 	id := ctx.Params("id")
 
-	item, err := c.BlogBannerService.Update(file, id)
+	item, err := c.BlogBannerService.Update(dto.BlogBannerUpdateDTO{File: file}, id)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.WebResponse{

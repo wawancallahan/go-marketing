@@ -50,6 +50,15 @@ var BlogBannerSet = wire.NewSet(
 	wire.Bind(new(controller.BlogBannerController), new(*controller.BlogBannerControllerImpl)),
 )
 
+var BlogArticleSet = wire.NewSet(
+	repository.NewBlogArticleRepository,
+	service.NewBlogArticleService,
+	controller.NewBlogArticleController,
+	wire.Bind(new(repository.BlogArticleRepository), new(*repository.BlogArticleRepositoryImpl)),
+	wire.Bind(new(service.BlogArticleService), new(*service.BlogArticleServiceImpl)),
+	wire.Bind(new(controller.BlogArticleController), new(*controller.BlogArticleControllerImpl)),
+)
+
 func InitializedServer() *App {
 	wire.Build(
 		config.New,
@@ -66,6 +75,7 @@ func InitializedRouter(Db *database.Database) *fiber.App {
 		MarketingLeadSet,
 		BlogCategorySet,
 		BlogBannerSet,
+		BlogArticleSet,
 		router.New,
 	)
 

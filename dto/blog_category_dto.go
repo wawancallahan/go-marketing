@@ -10,7 +10,7 @@ import (
 type BlogCategoryDTO struct {
 	Name        string      `json:"name" validate:"required"`
 	Slug        string      `json:"slug" validate:"required"`
-	IsActive    bool        `json:"is_active" validate:"required"`
+	IsActive    bool        `json:"isActive" validate:"required"`
 	Description null.String `json:"description,omitempty" validate:"omitempty"`
 }
 
