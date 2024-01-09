@@ -17,5 +17,5 @@ func (d *BlogBannerDTO) ToModel() model.BlogBanner {
 }
 
 type BlogBannerUpdateDTO struct {
-	File *multipart.FileHeader `json:"-"`
+	File *multipart.FileHeader `json:"-" form:"-"`
 }

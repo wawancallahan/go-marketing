@@ -26,7 +26,7 @@ func InitializedServer() *App {
 	return app
 }
 
-func InitializedRouter(Db *database.Database) *fiber.App {
+func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App {
 	marketingEventRepositoryImpl := repository.NewMarketingEventRepository()
 	marketingEventServiceImpl := service.NewMarketingEventService(Db, marketingEventRepositoryImpl)
 	marketingEventControllerImpl := controller.NewMarketingEventController(marketingEventServiceImpl)
@@ -37,7 +37,7 @@ func InitializedRouter(Db *database.Database) *fiber.App {
 	blogCategoryServiceImpl := service.NewBlogCategoryService(Db, blogCategoryRepositoryImpl)
 	blogCategoryControllerImpl := controller.NewBlogCategoryController(blogCategoryServiceImpl)
 	blogBannerRepositoryImpl := repository.NewBlogBannerRepository()
-	blogBannerServiceImpl := service.NewBlogBannerService(Db, blogBannerRepositoryImpl)
+	blogBannerServiceImpl := service.NewBlogBannerService(Db, Config, blogBannerRepositoryImpl)
 	blogBannerControllerImpl := controller.NewBlogBannerController(blogBannerServiceImpl)
 	blogArticleRepositoryImpl := repository.NewBlogArticleRepository()
 	blogArticleServiceImpl := service.NewBlogArticleService(Db, blogArticleRepositoryImpl)

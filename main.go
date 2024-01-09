@@ -34,7 +34,7 @@ func main() {
 	app.registerMiddlewares()
 
 	// Handle Register All Route in Router Folder
-	appRouter := InitializedRouter(app.Db)
+	appRouter := InitializedRouter(app.Db, app.Config)
 	app.Mount("/api", appRouter)
 
 	// Custom 404 Handler

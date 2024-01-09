@@ -69,7 +69,7 @@ func InitializedServer() *App {
 	return nil
 }
 
-func InitializedRouter(Db *database.Database) *fiber.App {
+func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App {
 	wire.Build(
 		MarketingEventSet,
 		MarketingLeadSet,

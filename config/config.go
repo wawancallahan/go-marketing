@@ -62,15 +62,18 @@ func New() *Config {
 
 func (config *Config) setDefaults() {
 	// Set default App configuration
-	config.SetDefault("APP_ADDR", ":8080")
+	config.SetDefault("APP_ADDR", ":8000")
 	config.SetDefault("APP_ENV", "local")
 
 	// Set default database configuration
 	config.SetDefault("DB_HOST", "localhost")
-	config.SetDefault("DB_USERNAME", "fiber")
-	config.SetDefault("DB_PASSWORD", "password")
+	config.SetDefault("DB_USERNAME", "root")
+	config.SetDefault("DB_PASSWORD", "")
 	config.SetDefault("DB_PORT", 3306)
-	config.SetDefault("DB_DATABASE", "boilerplate")
+	config.SetDefault("DB_DATABASE", "fiber")
+
+	// Set Service Url
+	config.SetDefault("STORAGE_SERVICE_URL", "")
 
 	// Set default Fiber configuration
 	config.SetDefault("FIBER_PREFORK", false)

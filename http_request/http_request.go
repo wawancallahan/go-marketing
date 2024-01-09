@@ -3,6 +3,7 @@ package httprequest
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -32,12 +33,16 @@ func RequestGet(url string, queryParams *url.Values, target interface{}) error {
 
 	defer response.Body.Close()
 
+	if response.StatusCode != 200 {
+		return errors.New("Failed Fetch Htpp")
+	}
+
 	json.NewDecoder(response.Body).Decode(&target)
 
 	return nil
 }
 
-func RequestPost(method string, url string, requestBody interface{}, target interface{}) error {
+func RequestPost(method string, url string, requestBody interface{}, target *map[string]interface{}) error {
 	var payload *bytes.Buffer = nil
 
 	if requestBody != nil {
@@ -67,12 +72,16 @@ func RequestPost(method string, url string, requestBody interface{}, target inte
 
 	defer response.Body.Close()
 
+	if response.StatusCode != 200 {
+		return errors.New("Failed Fetch Htpp")
+	}
+
 	json.NewDecoder(response.Body).Decode(&target)
 
 	return nil
 }
 
-func RequestPostForm(method string, url string, multiPartWriter *multipart.Writer, requestBody bytes.Buffer, target interface{}) error {
+func RequestPostForm(method string, url string, multiPartWriter *multipart.Writer, requestBody bytes.Buffer, target *map[string]interface{}) error {
 	client := http.Client{
 		Timeout: 10 * time.Second,
 	}
@@ -91,6 +100,10 @@ func RequestPostForm(method string, url string, multiPartWriter *multipart.Write
 	}
 
 	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return errors.New("Failed Fetch Htpp")
+	}
 
 	json.NewDecoder(response.Body).Decode(&target)
 
