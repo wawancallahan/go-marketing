@@ -42,7 +42,7 @@ func RequestGet(url string, queryParams *url.Values, target interface{}) error {
 	return nil
 }
 
-func RequestPost(method string, url string, requestBody interface{}, target *map[string]interface{}) error {
+func RequestPost(method string, url string, requestBody *map[string]interface{}, target *map[string]interface{}) error {
 	var payload *bytes.Buffer = nil
 
 	if requestBody != nil {

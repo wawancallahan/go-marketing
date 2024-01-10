@@ -60,7 +60,7 @@ func (r *BlogArticleRepositoryImpl) Find(tx *gorm.DB, id string) (*model.BlogArt
 }
 
 func (r *BlogArticleRepositoryImpl) Update(tx *gorm.DB, BlogArticle *model.BlogArticle) error {
-	err := tx.Save(&BlogArticle).Error
+	err := tx.Updates(&BlogArticle).Error
 
 	if err != nil {
 		return err

@@ -105,11 +105,11 @@ func (s *BlogBannerServiceImpl) Update(itemDTO dto.BlogBannerUpdateDTO, id strin
 func (s *BlogBannerServiceImpl) UploadImage(itemDTO dto.BlogBannerUpdateDTO, id string) (*dto.UploadImageResult, error) {
 	openFile, err := itemDTO.File.Open()
 
-	defer openFile.Close()
-
 	if err != nil {
 		return nil, errors.New("File Cannot Open")
 	}
+
+	defer openFile.Close()
 
 	byteFile, err := io.ReadAll(openFile)
 
@@ -121,8 +121,6 @@ func (s *BlogBannerServiceImpl) UploadImage(itemDTO dto.BlogBannerUpdateDTO, id 
 
 	filePath := "upload/blog/banners"
 
-	urlPath := ""
-
 	extension := mtype.Extension()
 
 	fileName := fmt.Sprintf("%s_%s%s", uuid.New(), id, extension)
@@ -133,61 +131,51 @@ func (s *BlogBannerServiceImpl) UploadImage(itemDTO dto.BlogBannerUpdateDTO, id 
 		"isPublic": "true",
 	}
 
-	if itemDTO.File != nil {
-		f, _ := itemDTO.File.Open()
+	var requestBody bytes.Buffer
 
-		defer f.Close()
+	multiPartWriter := multipart.NewWriter(&requestBody)
 
-		var requestBody bytes.Buffer
+	// Populate File
+	fileWriter, err := multiPartWriter.CreateFormFile("file", fileName)
+	if err != nil {
+		return nil, err
+	}
 
-		multiPartWriter := multipart.NewWriter(&requestBody)
+	_, err = io.Copy(fileWriter, openFile)
+	if err != nil {
+		return nil, err
+	}
+	// End Populate File
 
-		// Populate File
-		fileWriter, err := multiPartWriter.CreateFormFile("file", fileName)
+	// Populate Other Field
+
+	for k, v := range fieldData {
+		fieldWriter, err := multiPartWriter.CreateFormField(k)
 		if err != nil {
 			return nil, err
 		}
 
-		_, err = io.Copy(fileWriter, f)
+		_, err = fieldWriter.Write([]byte(v))
 		if err != nil {
 			return nil, err
 		}
-		// End Populate File
+	}
+	// End Populate
 
-		// Populate Other Field
+	multiPartWriter.Close()
 
-		for k, v := range fieldData {
-			fieldWriter, err := multiPartWriter.CreateFormField(k)
-			if err != nil {
-				return nil, err
-			}
+	var result map[string]interface{}
 
-			_, err = fieldWriter.Write([]byte(v))
-			if err != nil {
-				return nil, err
-			}
-		}
-		// End Populate
+	err = httprequest.RequestPostForm(string(http.MethodPost), fmt.Sprintf("%s/%s", s.Config.GetString("STORAGE_SERVICE_URL"), "upload"), multiPartWriter, requestBody, &result)
 
-		multiPartWriter.Close()
+	if err != nil {
+		return nil, err
+	}
 
-		var result map[string]interface{}
+	urlPath, ok := result["result"].(string)
 
-		err = httprequest.RequestPostForm(string(http.MethodPost), fmt.Sprintf("%s/%s", s.Config.GetString("STORAGE_SERVICE_URL"), "upload"), multiPartWriter, requestBody, &result)
-
-		if err != nil {
-			return nil, err
-		}
-
-		urlPathResult, ok := result["result"].(string)
-
-		if !ok {
-			return nil, errors.New("Failed Upload Image")
-		}
-
-		urlPath = urlPathResult
-
-		// Log Result Response
+	if !ok {
+		return nil, errors.New("Failed Upload Image")
 	}
 
 	return &dto.UploadImageResult{

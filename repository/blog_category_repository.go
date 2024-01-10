@@ -94,7 +94,7 @@ func (r *BlogCategoryRepositoryImpl) FindBySlugWithoutId(tx *gorm.DB, slug strin
 }
 
 func (r *BlogCategoryRepositoryImpl) Update(tx *gorm.DB, BlogCategory *model.BlogCategory) error {
-	err := tx.Save(&BlogCategory).Error
+	err := tx.Updates(&BlogCategory).Error
 
 	if err != nil {
 		return err

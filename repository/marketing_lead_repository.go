@@ -54,7 +54,7 @@ func (r *MarketingLeadRepositoryImpl) Find(tx *gorm.DB, id string) (*model.Marke
 }
 
 func (r *MarketingLeadRepositoryImpl) Update(tx *gorm.DB, marketingLead *model.MarketingLead) error {
-	err := tx.Save(&marketingLead).Error
+	err := tx.Updates(&marketingLead).Error
 
 	if err != nil {
 		return err

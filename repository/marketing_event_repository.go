@@ -55,7 +55,7 @@ func (r *MarketingEventRepositoryImpl) Find(tx *gorm.DB, id string) (*model.Mark
 }
 
 func (r *MarketingEventRepositoryImpl) Update(tx *gorm.DB, marketingEvent *model.MarketingEvent) error {
-	err := tx.Save(&marketingEvent).Error
+	err := tx.Updates(&marketingEvent).Error
 
 	if err != nil {
 		return err

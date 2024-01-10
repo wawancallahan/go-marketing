@@ -54,7 +54,7 @@ func (r *BlogBannerRepositoryImpl) Find(tx *gorm.DB, id string) (*model.BlogBann
 }
 
 func (r *BlogBannerRepositoryImpl) Update(tx *gorm.DB, BlogBanner *model.BlogBanner) error {
-	err := tx.Save(&BlogBanner).Error
+	err := tx.Updates(&BlogBanner).Error
 
 	if err != nil {
 		return err
