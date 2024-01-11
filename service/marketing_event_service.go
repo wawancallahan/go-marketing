@@ -18,6 +18,9 @@ type MarketingEventService interface {
 	Find(id string) (*model.MarketingEvent, error)
 	Update(itemDTO *dto.MarketingEventDTO, id string) (*model.MarketingEvent, error)
 	Delete(id string) error
+	EventType() (*[]util.ResultList, error)
+	ChannelEvent() (*[]util.ResultList, error)
+	MeasurementEvent() (*[]util.ResultList, error)
 }
 
 type MarketingEventServiceImpl struct {

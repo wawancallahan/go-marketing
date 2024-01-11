@@ -5,8 +5,10 @@ import (
 	"gopkg.in/guregu/null.v4"
 	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/dto"
+	"matsukana.cloud/go-marketing/enum"
 	"matsukana.cloud/go-marketing/model"
 	"matsukana.cloud/go-marketing/repository"
+	"matsukana.cloud/go-marketing/util"
 )
 
 type MarketingLeadService interface {
@@ -15,6 +17,8 @@ type MarketingLeadService interface {
 	Find(id string) (*model.MarketingLead, error)
 	Update(itemDTO *dto.MarketingLeadDTO, id string) (*model.MarketingLead, error)
 	Delete(id string) error
+	SourceType() (*[]util.ResultList, error)
+	ProductCategory() (*[]util.ResultList, error)
 }
 
 type MarketingLeadServiceImpl struct {
@@ -107,48 +111,6 @@ func (s *MarketingLeadServiceImpl) Update(itemDTO *dto.MarketingLeadDTO, id stri
 		return nil, err
 	}
 
-	// if itemDTO.File != nil {
-	// 	f, _ := itemDTO.File.Open()
-
-	// 	defer f.Close()
-
-	// 	var requestBody bytes.Buffer
-
-	// 	multiPartWriter := multipart.NewWriter(&requestBody)
-
-	// 	// Populate File
-	// 	fileWriter, err := multiPartWriter.CreateFormFile("file", "name.txt")
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	_, err = io.Copy(fileWriter, f)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	// End Populate File
-
-	// 	// Populate Other Field
-	// 	fieldWriter, err := multiPartWriter.CreateFormField("filename")
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	_, err = fieldWriter.Write([]byte("INI TES"))
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	// End Popilate
-
-	// 	multiPartWriter.Close()
-
-	// 	var result map[string]interface{}
-
-	// 	httprequest.RequestPostForm(string(http.MethodPost), "", multiPartWriter, requestBody, result)
-
-	// 	// Log Result Response
-	// }
-
 	tx.Commit()
 
 	return &item, nil
@@ -168,4 +130,34 @@ func (s *MarketingLeadServiceImpl) Delete(id string) error {
 	tx.Commit()
 
 	return nil
+}
+
+func (s *MarketingLeadServiceImpl) SourceType() (*[]util.ResultList, error) {
+	sourceType := enum.SourceTypeEnum{}.List()
+
+	sourceTypeResult := make([]util.ResultList, 0)
+
+	for k, v := range sourceType {
+		sourceTypeResult = append(sourceTypeResult, util.ResultList{
+			ID:   k,
+			Name: v,
+		})
+	}
+
+	return &sourceTypeResult, nil
+}
+
+func (s *MarketingLeadServiceImpl) ProductCategory() (*[]util.ResultList, error) {
+	productCategory := enum.ProductCategoryEnum{}.List()
+
+	productCategoryResult := make([]util.ResultList, 0)
+
+	for k, v := range productCategory {
+		productCategoryResult = append(productCategoryResult, util.ResultList{
+			ID:   k,
+			Name: v,
+		})
+	}
+
+	return &productCategoryResult, nil
 }
