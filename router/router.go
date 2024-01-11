@@ -11,6 +11,7 @@ func New(
 	blogCategoryController controller.BlogCategoryController,
 	blogBannerController controller.BlogBannerController,
 	blogArticleController controller.BlogArticleController,
+	webhookController controller.WebhookController,
 ) *fiber.App {
 	api := fiber.New()
 
@@ -19,6 +20,7 @@ func New(
 	BlogCategoryRouter(api, blogCategoryController)
 	BlogBannerRouter(api, blogBannerController)
 	BlogArticleRouter(api, blogArticleController)
+	WebhookRouter(api, webhookController)
 
 	return api
 }

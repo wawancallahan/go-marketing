@@ -64,6 +64,13 @@ var BlogArticleAttachmentSet = wire.NewSet(
 	wire.Bind(new(repository.BlogArticleAttachmentRepository), new(*repository.BlogArticleAttachmentRepositoryImpl)),
 )
 
+var WebhookSet = wire.NewSet(
+	service.NewWebhookService,
+	controller.NewWebhookController,
+	wire.Bind(new(service.WebhookService), new(*service.WebhookServiceImpl)),
+	wire.Bind(new(controller.WebhookController), new(*controller.WebhookControllerImpl)),
+)
+
 func InitializedServer() *App {
 	wire.Build(
 		config.New,
@@ -82,6 +89,7 @@ func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App 
 		BlogBannerSet,
 		BlogArticleAttachmentSet,
 		BlogArticleSet,
+		WebhookSet,
 		router.New,
 	)
 
