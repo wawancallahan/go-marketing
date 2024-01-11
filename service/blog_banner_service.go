@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 
@@ -22,6 +23,8 @@ import (
 type BlogBannerService interface {
 	Index() (*[]model.BlogBanner, error)
 	Update(itemDTO dto.BlogBannerUpdateDTO, id string) (*model.BlogBanner, error)
+	UploadImage(itemDTO dto.BlogBannerUpdateDTO, id string) (*dto.UploadImageResult, error)
+	DeleteImage(urlPath string) error
 }
 
 type BlogBannerServiceImpl struct {
@@ -69,6 +72,12 @@ func (s *BlogBannerServiceImpl) Update(itemDTO dto.BlogBannerUpdateDTO, id strin
 
 	if err != nil {
 		return nil, err
+	}
+
+	if blogBannerItem.FileName.Valid && blogBannerItem.FileName.String != "" {
+		err = s.DeleteImage(fmt.Sprintf("%s/%s", blogBannerItem.Path.String, blogBannerItem.FileName.String))
+
+		log.Println(err)
 	}
 
 	item := model.BlogBanner{
@@ -185,4 +194,20 @@ func (s *BlogBannerServiceImpl) UploadImage(itemDTO dto.BlogBannerUpdateDTO, id 
 		FilePath:  filePath,
 		UrlPath:   urlPath,
 	}, nil
+}
+
+func (s *BlogBannerServiceImpl) DeleteImage(urlPath string) error {
+	var result map[string]interface{}
+
+	requestBody := map[string]interface{}{
+		"fullPathObject": urlPath,
+	}
+
+	err := httprequest.RequestPost(string(http.MethodDelete), fmt.Sprintf("%s/%s", s.Config.GetString("STORAGE_SERVICE_URL"), "delete"), &requestBody, &result)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 
@@ -29,7 +30,8 @@ type BlogArticleService interface {
 	Find(id string) (*model.BlogArticle, error)
 	Update(itemDTO *dto.BlogArticleDTO, id string) (*model.BlogArticle, error)
 	Delete(id string) error
-	SaveImageArticle(itemDTO *dto.BlogArticleDTO, blogArticle model.BlogArticle) error
+	UploadAndSaveImageAttachment(tx *gorm.DB, itemDTO *dto.BlogArticleDTO, blogArticle model.BlogArticle) error
+	SaveAttachment(tx *gorm.DB, itemDTO *dto.UploadImageResult, blogArticle model.BlogArticle) error
 	UploadImage(itemDTO *dto.BlogArticleDTO, blogArticle model.BlogArticle) (*dto.UploadImageResult, error)
 	DeleteImage(urlPath string) error
 }
@@ -226,7 +228,9 @@ func (s *BlogArticleServiceImpl) SaveAttachment(tx *gorm.DB, itemDTO *dto.Upload
 	}
 
 	if blogArticleAttachment != nil {
-		s.DeleteImage(fmt.Sprintf("%s/%s", blogArticleAttachment.Path.String, blogArticleAttachment.FileName.String))
+		err = s.DeleteImage(fmt.Sprintf("%s/%s", blogArticleAttachment.Path.String, blogArticleAttachment.FileName.String))
+
+		log.Println(err)
 
 		updateBlogArticleAttachment := model.BlogArticleAttachment{
 			FileName: null.NewString(itemDTO.FileName, true),

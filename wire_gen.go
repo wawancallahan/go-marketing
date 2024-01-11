@@ -40,7 +40,8 @@ func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App 
 	blogBannerServiceImpl := service.NewBlogBannerService(Db, Config, blogBannerRepositoryImpl)
 	blogBannerControllerImpl := controller.NewBlogBannerController(blogBannerServiceImpl)
 	blogArticleRepositoryImpl := repository.NewBlogArticleRepository()
-	blogArticleServiceImpl := service.NewBlogArticleService(Db, blogArticleRepositoryImpl)
+	blogArticleAttachmentRepositoryImpl := repository.NewBlogArticleAttachmentRepository()
+	blogArticleServiceImpl := service.NewBlogArticleService(Db, Config, blogArticleRepositoryImpl, blogArticleAttachmentRepositoryImpl)
 	blogArticleControllerImpl := controller.NewBlogArticleController(blogArticleServiceImpl)
 	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl, blogCategoryControllerImpl, blogBannerControllerImpl, blogArticleControllerImpl)
 	return app
@@ -57,3 +58,5 @@ var BlogCategorySet = wire.NewSet(repository.NewBlogCategoryRepository, service.
 var BlogBannerSet = wire.NewSet(repository.NewBlogBannerRepository, service.NewBlogBannerService, controller.NewBlogBannerController, wire.Bind(new(repository.BlogBannerRepository), new(*repository.BlogBannerRepositoryImpl)), wire.Bind(new(service.BlogBannerService), new(*service.BlogBannerServiceImpl)), wire.Bind(new(controller.BlogBannerController), new(*controller.BlogBannerControllerImpl)))
 
 var BlogArticleSet = wire.NewSet(repository.NewBlogArticleRepository, service.NewBlogArticleService, controller.NewBlogArticleController, wire.Bind(new(repository.BlogArticleRepository), new(*repository.BlogArticleRepositoryImpl)), wire.Bind(new(service.BlogArticleService), new(*service.BlogArticleServiceImpl)), wire.Bind(new(controller.BlogArticleController), new(*controller.BlogArticleControllerImpl)))
+
+var BlogArticleAttachmentSet = wire.NewSet(repository.NewBlogArticleAttachmentRepository, wire.Bind(new(repository.BlogArticleAttachmentRepository), new(*repository.BlogArticleAttachmentRepositoryImpl)))

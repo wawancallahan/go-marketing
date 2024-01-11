@@ -59,6 +59,11 @@ var BlogArticleSet = wire.NewSet(
 	wire.Bind(new(controller.BlogArticleController), new(*controller.BlogArticleControllerImpl)),
 )
 
+var BlogArticleAttachmentSet = wire.NewSet(
+	repository.NewBlogArticleAttachmentRepository,
+	wire.Bind(new(repository.BlogArticleAttachmentRepository), new(*repository.BlogArticleAttachmentRepositoryImpl)),
+)
+
 func InitializedServer() *App {
 	wire.Build(
 		config.New,
@@ -75,6 +80,7 @@ func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App 
 		MarketingLeadSet,
 		BlogCategorySet,
 		BlogBannerSet,
+		BlogArticleAttachmentSet,
 		BlogArticleSet,
 		router.New,
 	)
