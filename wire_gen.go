@@ -45,7 +45,8 @@ func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App 
 	blogArticleControllerImpl := controller.NewBlogArticleController(blogArticleServiceImpl)
 	webhookServiceImpl := service.NewWebhookService(Db, marketingEventRepositoryImpl, marketingLeadRepositoryImpl)
 	webhookControllerImpl := controller.NewWebhookController(webhookServiceImpl)
-	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl, blogCategoryControllerImpl, blogBannerControllerImpl, blogArticleControllerImpl, webhookControllerImpl)
+	masterControllerImpl := controller.NewMasterController()
+	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl, blogCategoryControllerImpl, blogBannerControllerImpl, blogArticleControllerImpl, webhookControllerImpl, masterControllerImpl)
 	return app
 }
 
@@ -64,3 +65,5 @@ var BlogArticleSet = wire.NewSet(repository.NewBlogArticleRepository, service.Ne
 var BlogArticleAttachmentSet = wire.NewSet(repository.NewBlogArticleAttachmentRepository, wire.Bind(new(repository.BlogArticleAttachmentRepository), new(*repository.BlogArticleAttachmentRepositoryImpl)))
 
 var WebhookSet = wire.NewSet(service.NewWebhookService, controller.NewWebhookController, wire.Bind(new(service.WebhookService), new(*service.WebhookServiceImpl)), wire.Bind(new(controller.WebhookController), new(*controller.WebhookControllerImpl)))
+
+var MasterSet = wire.NewSet(controller.NewMasterController, wire.Bind(new(controller.MasterController), new(*controller.MasterControllerImpl)))

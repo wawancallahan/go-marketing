@@ -71,6 +71,11 @@ var WebhookSet = wire.NewSet(
 	wire.Bind(new(controller.WebhookController), new(*controller.WebhookControllerImpl)),
 )
 
+var MasterSet = wire.NewSet(
+	controller.NewMasterController,
+	wire.Bind(new(controller.MasterController), new(*controller.MasterControllerImpl)),
+)
+
 func InitializedServer() *App {
 	wire.Build(
 		config.New,
@@ -90,6 +95,7 @@ func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App 
 		BlogArticleAttachmentSet,
 		BlogArticleSet,
 		WebhookSet,
+		MasterSet,
 		router.New,
 	)
 

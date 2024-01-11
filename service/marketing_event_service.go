@@ -6,8 +6,10 @@ import (
 	"github.com/google/uuid"
 	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/dto"
+	"matsukana.cloud/go-marketing/enum"
 	"matsukana.cloud/go-marketing/model"
 	"matsukana.cloud/go-marketing/repository"
+	"matsukana.cloud/go-marketing/util"
 )
 
 type MarketingEventService interface {
@@ -139,4 +141,49 @@ func (s *MarketingEventServiceImpl) Delete(id string) error {
 	tx.Commit()
 
 	return nil
+}
+
+func (s *MarketingEventServiceImpl) EventType() (*[]util.ResultList, error) {
+	eventType := enum.EventTypeEnum{}.List()
+
+	eventTypeResult := make([]util.ResultList, 0)
+
+	for k, v := range eventType {
+		eventTypeResult = append(eventTypeResult, util.ResultList{
+			ID:   k,
+			Name: v,
+		})
+	}
+
+	return &eventTypeResult, nil
+}
+
+func (s *MarketingEventServiceImpl) ChannelEvent() (*[]util.ResultList, error) {
+	channelEvent := enum.ChannelEventEnum{}.List()
+
+	channelEventResult := make([]util.ResultList, 0)
+
+	for k, v := range channelEvent {
+		channelEventResult = append(channelEventResult, util.ResultList{
+			ID:   k,
+			Name: v,
+		})
+	}
+
+	return &channelEventResult, nil
+}
+
+func (s *MarketingEventServiceImpl) MeasurementEvent() (*[]util.ResultList, error) {
+	measurementEvent := enum.MeasurementEventEnum{}.List()
+
+	measurementEventResult := make([]util.ResultList, 0)
+
+	for k, v := range measurementEvent {
+		measurementEventResult = append(measurementEventResult, util.ResultList{
+			ID:   k,
+			Name: v,
+		})
+	}
+
+	return &measurementEventResult, nil
 }
