@@ -45,7 +45,7 @@ func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App 
 	blogArticleControllerImpl := controller.NewBlogArticleController(blogArticleServiceImpl)
 	webhookServiceImpl := service.NewWebhookService(Db, marketingEventRepositoryImpl, marketingLeadRepositoryImpl)
 	webhookControllerImpl := controller.NewWebhookController(webhookServiceImpl)
-	masterControllerImpl := controller.NewMasterController()
+	masterControllerImpl := controller.NewMasterController(marketingEventServiceImpl, marketingLeadServiceImpl)
 	app := router.New(marketingEventControllerImpl, marketingLeadControllerImpl, blogCategoryControllerImpl, blogBannerControllerImpl, blogArticleControllerImpl, webhookControllerImpl, masterControllerImpl)
 	return app
 }
