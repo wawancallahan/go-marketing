@@ -7,6 +7,7 @@ import (
 	cache "matsukana.cloud/go-marketing/cache/redis"
 	configuration "matsukana.cloud/go-marketing/config"
 	"matsukana.cloud/go-marketing/database"
+	"matsukana.cloud/go-marketing/message"
 	"matsukana.cloud/go-marketing/response"
 
 	"github.com/gofiber/fiber/v2"
@@ -35,9 +36,22 @@ func main() {
 
 	app.registerMiddlewares()
 
+	mq := message.New(app.Config)
+
+	if mq != nil {
+		defer mq.Connection.Close()
+		defer mq.Channel.Close()
+	}
+
 	// Handle Register All Route in Router Folder
 	appRouter := InitializedRouter(app.Db, app.Config)
 	app.Mount("/api", appRouter)
+
+	app.Get("publish", func(c *fiber.Ctx) error {
+		return c.Status(200).JSON(map[string]string{
+			"status": "OK",
+		})
+	})
 
 	// Custom 404 Handler
 	app.Use(func(c *fiber.Ctx) error {

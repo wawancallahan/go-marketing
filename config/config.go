@@ -45,6 +45,8 @@ func New() *Config {
 
 	config.AutomaticEnv()
 
+	config.setDefaults()
+
 	// Read configuration
 	if err := config.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
@@ -77,6 +79,9 @@ func (config *Config) setDefaults() {
 	config.SetDefault("REDIS_PORT", 6379)
 	config.SetDefault("REDIS_PASSWORD", "")
 	config.SetDefault("REDIS_DB_NUMBER", 0)
+
+	// Set MQ configuration
+	config.SetDefault("AMQP_SERVER_URL", "amqp://guest:guest@localhost:5672/")
 
 	// Set Service Url
 	config.SetDefault("STORAGE_SERVICE_URL", "")
