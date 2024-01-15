@@ -36,29 +36,34 @@ func New(config *config.Config) *Message {
 
 func (m *Message) Consumer() {
 	// Subscribing to QueueService1 for getting messages.
-	messages, _ := m.Channel.Consume(
-		"queue", // queue name
-		"",      // consumer
-		true,    // auto-ack
-		false,   // exclusive
-		false,   // no local
-		false,   // no wait
-		nil,     // arguments
-	)
+
+	consumeQueueNames := map[string]string{}
+
+	// Make a channel to receive messages into infinite loop.
+	forever := make(chan bool)
 
 	// Build a welcome message.
 	log.Println("Successfully connected to RabbitMQ")
 	log.Println("Waiting for messages")
 
-	// Make a channel to receive messages into infinite loop.
-	forever := make(chan bool)
+	for queueName, _ := range consumeQueueNames {
+		messages, _ := m.Channel.Consume(
+			queueName, // queue name
+			"",        // consumer
+			true,      // auto-ack
+			false,     // exclusive
+			false,     // no local
+			false,     // no wait
+			nil,       // arguments
+		)
 
-	go func() {
-		for message := range messages {
-			// For example, show received message in a console.
-			log.Printf(" > Received message: %s\n", message.Body)
-		}
-	}()
+		go func() {
+			for message := range messages {
+				// For example, show received message in a console.
+				log.Printf(" > Received message: %s\n", message.Body)
+			}
+		}()
+	}
 
 	<-forever
 }
