@@ -6,6 +6,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	cache "matsukana.cloud/go-marketing/cache/redis"
 	"matsukana.cloud/go-marketing/config"
 	"matsukana.cloud/go-marketing/controller"
 	"matsukana.cloud/go-marketing/database"
@@ -76,14 +77,15 @@ var MasterSet = wire.NewSet(
 	wire.Bind(new(controller.MasterController), new(*controller.MasterControllerImpl)),
 )
 
-func InitializedServer() *App {
+func InitializedServer() (*App, error) {
 	wire.Build(
 		config.New,
 		database.New,
+		cache.NewRedis,
 		NewApp,
 	)
 
-	return nil
+	return nil, nil
 }
 
 func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App {

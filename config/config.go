@@ -72,6 +72,12 @@ func (config *Config) setDefaults() {
 	config.SetDefault("DB_PORT", 3306)
 	config.SetDefault("DB_DATABASE", "fiber")
 
+	// Set redis configuration
+	config.SetDefault("REDIS_HOST", "localhost")
+	config.SetDefault("REDIS_PORT", 6379)
+	config.SetDefault("REDIS_PASSWORD", "")
+	config.SetDefault("REDIS_DB_NUMBER", 0)
+
 	// Set Service Url
 	config.SetDefault("STORAGE_SERVICE_URL", "")
 

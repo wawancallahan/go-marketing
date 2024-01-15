@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/wire"
+	"matsukana.cloud/go-marketing/cache/redis"
 	"matsukana.cloud/go-marketing/config"
 	"matsukana.cloud/go-marketing/controller"
 	"matsukana.cloud/go-marketing/database"
@@ -19,11 +20,18 @@ import (
 
 // Injectors from injector.go:
 
-func InitializedServer() *App {
+func InitializedServer() (*App, error) {
 	configConfig := config.New()
-	databaseDatabase := database.New(configConfig)
-	app := NewApp(configConfig, databaseDatabase)
-	return app
+	databaseDatabase, err := database.New(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	redisCache, err := cache.NewRedis(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	app := NewApp(configConfig, databaseDatabase, redisCache)
+	return app, nil
 }
 
 func InitializedRouter(Db *database.Database, Config *config.Config) *fiber.App {

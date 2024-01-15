@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 
+	cache "matsukana.cloud/go-marketing/cache/redis"
 	configuration "matsukana.cloud/go-marketing/config"
 	"matsukana.cloud/go-marketing/database"
 	"matsukana.cloud/go-marketing/response"
@@ -18,17 +19,18 @@ type App struct {
 	*fiber.App
 	Config *configuration.Config
 	Db     *database.Database
+	Redis  *cache.RedisCache
 }
 
-func NewApp(config *configuration.Config, Db *database.Database) *App {
-	return &App{fiber.New(*config.GetFiberConfig()), config, Db}
+func NewApp(config *configuration.Config, Db *database.Database, Redis *cache.RedisCache) *App {
+	return &App{fiber.New(*config.GetFiberConfig()), config, Db, Redis}
 }
 
 func main() {
-	app := InitializedServer()
+	app, err := InitializedServer()
 
-	if app.Db == nil {
-		panic("failed to connect to database")
+	if err != nil {
+		panic(err.Error())
 	}
 
 	app.registerMiddlewares()
@@ -59,7 +61,7 @@ func main() {
 	}()
 
 	// Start listening on the specified address
-	err := app.Listen(app.Config.GetString("APP_ADDR"))
+	err = app.Listen(app.Config.GetString("APP_ADDR"))
 	if err != nil {
 		app.exit()
 	}
