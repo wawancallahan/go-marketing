@@ -73,7 +73,7 @@ func main() {
 
 		jsonString, _ := json.Marshal(send)
 
-		mq.Channel.PublishWithContext(context.Background(), "go", "go.notification.test", false, false, amqp091.Publishing{
+		mq.Channel.PublishWithContext(context.Background(), "go", "go.firebase", false, false, amqp091.Publishing{
 			ContentType: "text/plain",
 			Body:        jsonString,
 		})
