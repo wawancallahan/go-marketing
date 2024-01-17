@@ -1,7 +1,7 @@
 package message
 
 import (
-	"encoding/json"
+	"context"
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -16,12 +16,14 @@ var (
 )
 
 type Message struct {
-	Connection *amqp.Connection
-	Channel    *amqp.Channel
+	ExchangeName string
+	Connection   *amqp.Connection
+	Channel      *amqp.Channel
 }
 
 func NewMessage(config *config.Config) *Message {
 	amqpServerURL := config.GetString("AMQP_SERVER_URL")
+	exchangeName := config.GetString("AMQP_EXCHANGE_NAME")
 
 	// Create a new RabbitMQ connection.
 	connectRabbitMQ, err := amqp.Dial(amqpServerURL)
@@ -37,7 +39,7 @@ func NewMessage(config *config.Config) *Message {
 		panic(err)
 	}
 
-	if err := channelRabbitMQ.ExchangeDeclare("go", "topic", true, false, false, false, nil); err != nil {
+	if err := channelRabbitMQ.ExchangeDeclare(exchangeName, "topic", true, false, false, false, nil); err != nil {
 		panic(err)
 	}
 
@@ -61,8 +63,9 @@ func NewMessage(config *config.Config) *Message {
 	}
 
 	return &Message{
-		Connection: connectRabbitMQ,
-		Channel:    channelRabbitMQ,
+		Connection:   connectRabbitMQ,
+		Channel:      channelRabbitMQ,
+		ExchangeName: exchangeName,
 	}
 }
 
@@ -91,21 +94,6 @@ func (m *Message) Consumer() {
 			for message := range messages {
 				// For example, show received message in a console.
 				log.Printf(" > Received message: %s\n", message.Body)
-
-				type s struct {
-					ID   int
-					Name string
-				}
-
-				var result s
-
-				err := json.Unmarshal(message.Body, &result)
-
-				if err != nil {
-					log.Println(err)
-				}
-
-				log.Println(result.ID)
 			}
 		}()
 	}
@@ -113,6 +101,6 @@ func (m *Message) Consumer() {
 	<-forever
 }
 
-func (m *Message) Publish(queueName string) {
-
+func (m *Message) Publish(routingKey string, publishing amqp.Publishing) error {
+	return m.Channel.PublishWithContext(context.Background(), m.ExchangeName, routingKey, false, false, publishing)
 }

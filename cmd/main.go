@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"os"
 	"os/signal"
 
@@ -16,7 +14,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/rabbitmq/amqp091-go"
 )
 
 type App struct {
@@ -58,30 +55,6 @@ func main() {
 	// Handle Register All Route in Router Folder
 	appRouter := InitializedRouter(app.Db, app.Config)
 	app.Mount("/api", appRouter)
-
-	app.Get("publish", func(c *fiber.Ctx) error {
-
-		type s struct {
-			ID   int
-			Name string
-		}
-
-		send := &s{
-			ID:   1,
-			Name: "Test",
-		}
-
-		jsonString, _ := json.Marshal(send)
-
-		mq.Channel.PublishWithContext(context.Background(), "go", "go.firebase", false, false, amqp091.Publishing{
-			ContentType: "text/plain",
-			Body:        jsonString,
-		})
-
-		return c.Status(200).JSON(map[string]string{
-			"status": "OK",
-		})
-	})
 
 	// Custom 404 Handler
 	app.Use(func(c *fiber.Ctx) error {
